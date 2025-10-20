@@ -1,0 +1,258 @@
+/* General styles */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      background-color: #f1f1f1;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    
+    h1, h2 {
+      color: #333;
+      margin-top: 0;
+    }
+    
+    /* Controls section */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+    
+    .control-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .control-group label {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    
+    select, input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 200px;
+    }
+    
+    input[type="range"] {
+      width: 200px;
+    }
+    
+    /* Buttons */
+    .buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .btn-start {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .btn-start:hover:not(:disabled) {
+      background-color: #45a049;
+    }
+    
+    .btn-stop {
+      background-color: #f44336;
+      color: white;
+    }
+    
+    .btn-stop:hover:not(:disabled) {
+      background-color: #d32f2f;
+    }
+    
+    .btn-reset {
+      background-color: #808080;
+      color: white;
+    }
+    
+    .btn-reset:hover {
+      background-color: #707070;
+    }
+    
+    .btn-add {
+      background-color: #2196F3;
+      color: white;
+    }
+    
+    .btn-add:hover:not(:disabled) {
+      background-color: #0b7dda;
+    }
+    
+    /* Main display area */
+    .display-area {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    
+    @media (min-width: 768px) {
+      .display-area {
+        flex-direction: row;
+      }
+    }
+    
+    .flask-container, .graph-container {
+      flex: 1;
+      background-color: white;
+      padding: 16px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Flask visualization */
+    .flask-visualization {
+      position: relative;
+      height: 256px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .flask {
+      position: relative;
+    }
+    
+    .flask-body {
+      width: 160px;
+      height: 160px;
+      border: 2px solid #888;
+      border-top: 0;
+      border-radius: 0 0 80px 80px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .flask-solution {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 75%;
+      border-radius: 0 0 80px 80px;
+      transition: background-color 0.5s;
+    }
+    
+    .flask-neck {
+      width: 64px;
+      height: 48px;
+      background-color: white;
+      border: 2px solid #888;
+      border-bottom: 0;
+      margin: 0 auto;
+    }
+    
+    .burette-tip {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100%);
+    }
+    
+    .burette-stem {
+      width: 8px;
+      height: 48px;
+      background-color: #bbb;
+      margin: 0 auto;
+    }
+    
+    .burette-end {
+      width: 16px;
+      height: 16px;
+      background-color: #bbb;
+      margin: -4px auto 0;
+      border-radius: 0 0 8px 8px;
+    }
+    
+    .drop {
+      width: 8px;
+      height: 8px;
+      background-color: #4dabf7;
+      border-radius: 50%;
+      margin: 0 auto;
+      animation: drop 1s infinite;
+    }
+    
+    @keyframes drop {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+    }
+    
+    .flask-info {
+      margin-top: 16px;
+    }
+    
+    .flask-info p {
+      margin: 8px 0;
+    }
+    
+    .equivalence-point {
+      color: #2e7d32;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    
+    /* Graph */
+    .graph-container svg {
+      border: 1px solid #ddd;
+    }
+    
+    /* Instructions */
+    .instructions {
+      width: 100%;
+      margin-top: 24px;
+      background-color: white;
+      padding: 16px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .instructions ul {
+      padding-left: 20px;
+    }
+    
+    .instructions li {
+      margin-bottom: 4px;
+    }
+    
+    .chem-info {
+      margin-top: 16px;
+      font-size: 0.9em;
+      color: #666;
+    }

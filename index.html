@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acid-Base Titration Simulator - Grade 12 - St. Mary High</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Acid-Base Titration Simulator - St. Mary High - M. Cole</h1>
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+      <a href="/" style="display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; background-color: #4CAF50; color: white; border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.3); text-decoration: none; transition: transform 0.3s ease, box-shadow 0.3s ease;" title="Back to Dashboard">
+        <i class="fas fa-home" style="font-size: 20px;"></i>
+      </a>
+    </div>
+    
+    <!-- Simulation controls -->
+    <div class="controls">
+      <div class="control-group">
+        <label for="titration-type">Titration Type:</label>
+        <select id="titration-type">
+          <option value="strongAcidStrongBase">Strong Acid (HCl) + Strong Base (NaOH)</option>
+          <option value="weakAcidStrongBase">Weak Acid (CH₃COOH) + Strong Base (NaOH)</option>
+          <option value="strongAcidWeakBase">Strong Acid (HCl) + Weak Base (NH₃)</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label for="acid-concentration">Acid Concentration (M):</label>
+        <input type="number" id="acid-concentration" min="0.01" max="1.0" step="0.01" value="0.1">
+      </div>
+      
+      <div class="control-group">
+        <label for="base-concentration">Base Concentration (M):</label>
+        <input type="number" id="base-concentration" min="0.01" max="1.0" step="0.01" value="0.1">
+      </div>
+      
+      <div class="control-group">
+        <label for="titration-speed">Titration Speed:</label>
+        <input type="range" id="titration-speed" min="1" max="20" value="10">
+      </div>
+    </div>
+    
+    <!-- Action buttons -->
+    <div class="buttons">
+      <button id="btn-start" class="btn-start">Start</button>
+      <button id="btn-stop" class="btn-stop" disabled>Stop</button>
+      <button id="btn-reset" class="btn-reset">Reset</button>
+      <button id="btn-add-small" class="btn-add">Add 0.1 mL</button>
+      <button id="btn-add-large" class="btn-add">Add 1.0 mL</button>
+    </div>
+    
+    <!-- Main display area -->
+    <div class="display-area">
+      <!-- Left side: Flask visualization -->
+      <div class="flask-container">
+        <h2>Titration Flask</h2>
+        
+        <div class="flask-visualization">
+          <div class="flask">
+            <div class="flask-body">
+              <div class="flask-solution" id="solution"></div>
+            </div>
+            <div class="flask-neck"></div>
+            
+            <div class="burette-tip">
+              <div class="burette-stem"></div>
+              <div class="burette-end"></div>
+              <div class="drop" id="drop" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flask-info">
+          <p><strong>Current pH:</strong> <span id="current-ph">0.00</span></p>
+          <p><strong>Base Added:</strong> <span id="base-added">0.0</span> mL</p>
+          <p><strong>Solution:</strong> <span id="solution-info">HCl (strong acid) + NaOH (strong base)</span></p>
+          <p id="equivalence-point-info" class="equivalence-point" style="display: none;"></p>
+        </div>
+      </div>
+      
+      <!-- Right side: Titration curve -->
+      <div class="graph-container">
+        <h2>Titration Curve</h2>
+        <svg id="titration-curve" width="400" height="300"></svg>
+        <div class="graph-info">
+          <p class="text-sm">
+            This graph shows the pH of the solution as a function of the volume of base added.
+            <span id="equivalence-line-info" style="display: none;"></span>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Instructions -->
+    <div class="instructions">
+      <h2>Instructions & Information</h2>
+      <ul>
+        <li>Select the titration type and set acid/base concentrations (default: 0.1 M)</li>
+        <li>Click "Start" to run the simulation continuously or use the "Add" buttons for manual titration</li>
+        <li>The equivalence point is marked on the graph once reached</li>
+        <li>Solution color changes based on pH: red (acidic), purple (neutral), blue (basic)</li>
+        <li><strong>Strong Acid + Strong Base:</strong> Equivalence point at pH 7</li>
+        <li><strong>Weak Acid + Strong Base:</strong> Equivalence point at pH > 7 (basic)</li>
+        <li><strong>Strong Acid + Weak Base:</strong> Equivalence point at pH < 7 (acidic)</li>
+      </ul>
+      <div class="chem-info">
+        <p><strong>pKa Values:</strong> Ethanoic acid (CH₃COOH): 4.74</p>
+        <p><strong>pKb Values:</strong> Ammonia (NH₃): 4.74</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
