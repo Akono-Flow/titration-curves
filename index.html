@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AcidBase Pro — Titration Curves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,400;0,500&family=Lora:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --bg:#EEF2F8;--surface:#fff;--s2:#F4F7FC;--border:#D8DEE9;
+  --primary:#1B3A6B;--accent:#0077B6;--a2:#00B4AA;
+  --danger:#D62839;--warn:#E07A2F;--ok:#2D8653;
+  --tx:#111827;--tx2:#374151;--tx3:#6B7280;
+  --sh:0 2px 8px rgba(0,0,0,.10);--shl:0 8px 32px rgba(0,0,0,.14);
+  --r:10px;--mono:'DM Mono',monospace;--sans:'Lexend',sans-serif;--disp:'Lora',serif;
+  --tr:.18s ease;
+}
+[data-theme="dark"]{
+  --bg:#0B1120;--surface:#141E30;--s2:#1A2640;--border:#263347;
+  --primary:#60A5FA;--accent:#38BDF8;--a2:#34D399;
+  --tx:#F1F5F9;--tx2:#CBD5E1;--tx3:#64748B;
+  --sh:0 2px 8px rgba(0,0,0,.45);--shl:0 8px 32px rgba(0,0,0,.6);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px;line-height:1.6;transition:background var(--tr),color var(--tr)}
+.app-header{background:var(--primary);color:#fff;padding:11px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh);position:sticky;top:0;z-index:200;transition:background var(--tr)}
+.header-brand{display:flex;align-items:center;gap:11px}
+.brand-icon{width:34px;height:34px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.brand-text h1{font-family:var(--disp);font-size:16px;font-weight:600;line-height:1.2}
+.brand-text p{font-size:10px;opacity:.7;letter-spacing:.5px}
+.header-actions{display:flex;align-items:center;gap:7px}
+.icon-btn{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background var(--tr)}
+.icon-btn:hover{background:rgba(255,255,255,.22)}
+.home-link{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;text-decoration:none;font-size:14px;transition:background var(--tr)}
+.home-link:hover{background:rgba(255,255,255,.28)}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;transition:background var(--tr),border-color var(--tr)}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{padding:10px 16px;border:none;background:transparent;color:var(--tx3);font-family:var(--sans);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;border-bottom:2.5px solid transparent;margin-bottom:-2px;display:flex;align-items:center;gap:6px;transition:all var(--tr)}
+.tab-btn:hover{color:var(--tx);background:var(--s2)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.main{max-width:1200px;margin:0 auto;padding:20px 16px}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);padding:16px;border:1px solid var(--border);transition:background var(--tr),border-color var(--tr)}
+.card-hd{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.card-hd i{color:var(--accent)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.row2{grid-template-columns:1fr}}
+.ctrl label{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3);margin-bottom:3px}
+.ctrl select,.ctrl input[type="number"]{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--s2);color:var(--tx);font-family:var(--sans);font-size:12.5px;transition:border-color var(--tr),background var(--tr)}
+.ctrl select:focus,.ctrl input:focus{outline:none;border-color:var(--accent)}
+.ctrl input[type="range"]{width:100%;accent-color:var(--accent);margin-top:3px}
+.btn{padding:6px 13px;border:none;border-radius:6px;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all var(--tr);white-space:nowrap}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover:not(:disabled){filter:brightness(1.12)}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover:not(:disabled){filter:brightness(1.12)}
+.btn-neutral{background:var(--s2);color:var(--tx2);border:1px solid var(--border)}.btn-neutral:hover:not(:disabled){background:var(--border)}
+.btn-success{background:var(--ok);color:#fff}.btn-success:hover:not(:disabled){filter:brightness(1.1)}
+.btn-warn{background:var(--warn);color:#fff}.btn-warn:hover:not(:disabled){filter:brightness(1.1)}
+.btn-add{background:var(--s2);color:var(--tx2);border:1px solid var(--border);font-family:var(--mono);font-size:11.5px}
+.btn-add:hover:not(:disabled){background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.add-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;align-items:center}
+.add-row-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);margin-right:2px}
+.vsep{width:1px;height:20px;background:var(--border);margin:0 3px}
+.sim-grid{display:grid;grid-template-columns:270px 1fr;gap:16px}
+@media(max-width:740px){.sim-grid{grid-template-columns:1fr}}
+.flask-col{display:flex;flex-direction:column;gap:12px}
+.flask-visual-wrap{display:flex;flex-direction:column;align-items:center;padding:12px 0 6px}
+.burette-assy{display:flex;flex-direction:column;align-items:center}
+.b-body{width:18px;height:68px;background:linear-gradient(90deg,rgba(140,200,240,.3)0%,rgba(210,235,255,.65)45%,rgba(140,200,240,.3)100%);border:1.5px solid #88BDD0;border-radius:3px;position:relative;overflow:hidden}
+.b-liquid{position:absolute;bottom:0;width:100%;background:linear-gradient(180deg,rgba(90,170,250,.6),rgba(50,130,220,.85));transition:height .3s}
+.b-tip{width:5px;height:12px;background:#88BDD0;margin:0 auto}
+.b-nozzle{width:3px;height:9px;background:#88BDD0;margin:0 auto;border-radius:0 0 2px 2px}
+.drop-zone{width:6px;height:24px;margin:0 auto;display:flex;align-items:flex-start;justify-content:center}
+.drop{width:7px;height:8px;background:radial-gradient(circle at 30% 30%,rgba(155,210,255,.9),rgba(50,140,230,.95));border-radius:50% 50% 50% 50%/40% 40% 60% 60%;animation:dropFall .85s ease-in infinite;display:none}
+@keyframes dropFall{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(22px) scale(.5);opacity:0}}
+.flask-svg-wrap{width:140px;height:175px}
+.flask-svg-wrap svg{width:100%;height:100%;overflow:visible}
+.ph-badge{text-align:center;background:var(--s2);border:1.5px solid var(--border);border-radius:50px;padding:6px 18px;margin-top:8px}
+.ph-label{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--tx3)}
+.ph-value{font-family:var(--mono);font-size:28px;font-weight:500;line-height:1.2;transition:color .4s}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.stat{background:var(--s2);border-radius:7px;padding:8px 11px;border:1px solid var(--border)}
+.stat-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);margin-bottom:2px}
+.stat-val{font-family:var(--mono);font-size:14px;color:var(--tx);font-weight:500}
+.stat-unit{font-size:9.5px;color:var(--tx3);margin-left:2px}
+.eq-banner{background:linear-gradient(135deg,rgba(45,134,83,.15),rgba(45,134,83,.28));border:1px solid var(--ok);border-radius:7px;padding:8px 12px;color:var(--ok);font-size:11.5px;font-weight:700;display:none;align-items:center;gap:6px;margin-top:8px}
+.graph-col{display:flex;flex-direction:column;gap:12px}
+.canvas-wrap{position:relative;width:100%;border-radius:8px;border:1px solid var(--border);overflow:hidden;line-height:0}
+#main-canvas{display:block;width:100%;height:auto;cursor:crosshair;position:relative;z-index:1}
+#ov-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.graph-toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.region-exp{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;min-height:60px;font-size:12.5px;transition:all .2s}
+.reg-title{font-weight:700;color:var(--accent);font-size:13px;margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.reg-formula{font-family:var(--mono);font-size:11px;color:var(--tx2);background:var(--surface);padding:6px 10px;border-radius:5px;margin:5px 0;border-left:3px solid var(--accent);line-height:1.6;white-space:pre-wrap}
+.reg-calc{color:var(--tx3);font-size:11.5px;line-height:1.8;white-space:pre-wrap;font-family:var(--mono)}
+.badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.tag-init{background:rgba(214,40,57,.12);color:var(--danger)}
+.tag-buf{background:rgba(224,122,47,.12);color:var(--warn)}
+.tag-half{background:rgba(0,119,182,.12);color:var(--accent)}
+.tag-eq{background:rgba(45,134,83,.12);color:var(--ok)}
+.tag-after{background:rgba(124,58,237,.12);color:#7C3AED}
+.calc-layout{display:grid;grid-template-columns:1fr 1.6fr;gap:16px}
+@media(max-width:680px){.calc-layout{grid-template-columns:1fr}}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:3px}
+.fg input,.fg select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:7px;background:var(--s2);color:var(--tx);font-family:var(--sans);font-size:12.5px;transition:border-color var(--tr)}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--accent)}
+.calc-result{background:var(--s2);border-radius:9px;padding:16px;border:1px solid var(--border);min-height:300px}
+.calc-ph-big{font-family:var(--mono);font-size:40px;font-weight:500;text-align:center;padding:12px;background:var(--surface);border-radius:9px;margin-bottom:12px;border:2px solid var(--border);letter-spacing:1px}
+.step-list{list-style:none;padding:0}
+.step-li{padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;line-height:1.7}
+.step-li:last-child{border-bottom:none}
+.step-hd{display:flex;gap:7px;align-items:flex-start;margin-bottom:2px}
+.step-num{display:inline-flex;width:18px;height:18px;background:var(--accent);color:#fff;border-radius:50%;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:2px}
+.step-txt{color:var(--tx2)}
+.eq-block{font-family:var(--mono);background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);padding:6px 10px;border-radius:5px;font-size:11px;color:var(--tx);margin-top:3px;white-space:pre-wrap;line-height:1.5}
+.calc-empty{color:var(--tx3);font-size:13px;text-align:center;padding:36px 20px}
+.region-tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.theory-wrap{display:grid;grid-template-columns:200px 1fr;gap:20px}
+@media(max-width:620px){.theory-wrap{grid-template-columns:1fr}}
+.theory-toc{position:sticky;top:72px;height:fit-content}
+.toc-list{list-style:none}
+.toc-list a{display:block;padding:6px 10px;color:var(--tx2);text-decoration:none;border-radius:5px;font-size:12px;border-left:2px solid transparent;transition:all var(--tr)}
+.toc-list a:hover{background:var(--s2);color:var(--accent);border-left-color:var(--accent)}
+.theory-body h2{font-family:var(--disp);font-size:19px;color:var(--primary);margin:24px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--border)}
+.theory-body h3{font-size:14px;font-weight:700;color:var(--tx);margin:16px 0 5px}
+.theory-body p{color:var(--tx2);margin-bottom:10px;font-size:13px;line-height:1.8}
+.theory-body ul,.theory-body ol{color:var(--tx2);margin:6px 0 10px 18px;font-size:13px;line-height:1.8}
+.eq-box{background:linear-gradient(135deg,var(--s2),var(--surface));border:1px solid var(--border);border-left:4px solid var(--accent);padding:12px 16px;border-radius:8px;margin:10px 0}
+.eq-box .eq-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);margin-bottom:4px;font-weight:700}
+.eq-box .eq-val{font-family:var(--mono);font-size:13px;color:var(--tx);line-height:1.7}
+.tbl{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px}
+.tbl th{background:var(--s2);padding:8px 11px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);border-bottom:2px solid var(--border);font-weight:700}
+.tbl td{padding:8px 11px;border-bottom:1px solid var(--border);color:var(--tx2)}
+.tbl tr:hover td{background:var(--s2)}
+.info-hl{background:linear-gradient(135deg,rgba(0,119,182,.07),rgba(0,180,170,.07));border:1px solid rgba(0,119,182,.17);border-radius:8px;padding:12px 15px;margin:10px 0;font-size:13px;color:var(--tx2)}
+.sc-type-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--s2);border-radius:8px;padding:4px}
+.sc-tab{flex:1;padding:7px 10px;border:none;border-radius:6px;background:transparent;color:var(--tx3);font-family:var(--sans);font-size:11.5px;font-weight:600;cursor:pointer;transition:all var(--tr)}
+.sc-tab.active{background:var(--surface);color:var(--accent);box-shadow:var(--sh)}
+.sc-section{display:none}.sc-section.active{display:block}
+.reg-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:11px;overflow:hidden}
+.reg-card-hd{background:var(--s2);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border-bottom:1px solid var(--border);user-select:none;transition:background var(--tr)}
+.reg-card-hd:hover{background:var(--border)}
+.reg-card-hd h3{font-size:12.5px;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:8px}
+.reg-card-hd .ti{color:var(--tx3);transition:transform .2s;font-size:11px}
+.reg-card-body{padding:14px;line-height:1.8;display:none}
+.reg-card-body.open{display:block}
+.reg-card-body p{color:var(--tx2);font-size:12.5px;margin-bottom:8px}
+.worked{background:var(--s2);border-radius:8px;padding:12px;border:1px solid var(--border);margin-top:8px}
+.worked-title{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);margin-bottom:8px;font-weight:700}
+.ws{display:flex;gap:8px;margin-bottom:8px;font-size:12.5px}
+.ws-n{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;margin-top:2px}
+.ws-c{color:var(--tx2);line-height:1.6}
+.ws-c .eq{display:block;font-family:var(--mono);font-size:11px;color:var(--tx);line-height:1.5;margin-top:2px;background:var(--surface);padding:4px 8px;border-radius:4px;border-left:2px solid var(--accent)}
+.ans-box{background:linear-gradient(135deg,rgba(45,134,83,.1),rgba(45,134,83,.18));border:1px solid rgba(45,134,83,.3);border-radius:7px;padding:9px 13px;margin-top:9px;font-family:var(--mono);font-size:13.5px;color:var(--ok);font-weight:600;text-align:center}
+.data-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.data-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--border)}
+.data-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.data-tbl th{background:var(--s2);padding:9px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);font-weight:700;border-bottom:2px solid var(--border);white-space:nowrap}
+.data-tbl td{padding:8px 14px;border-bottom:1px solid var(--border);color:var(--tx2)}
+.data-tbl td.mn{font-family:var(--mono);font-size:12px}
+.data-tbl tr:hover td{background:var(--s2)}
+.data-tbl tr:last-child td{border-bottom:none}
+.data-empty{text-align:center;padding:36px;color:var(--tx3);font-size:13px}
+.ds-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.ds-item{background:var(--s2);border-radius:7px;padding:7px 13px;border:1px solid var(--border);font-size:11.5px;color:var(--tx2)}
+.ds-item span{font-family:var(--mono);color:var(--accent);font-weight:600}
+.stg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.stg-section h3{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--tx3);margin-bottom:11px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.stg-section h3 i{color:var(--accent);font-size:11px}
+.stg-item{margin-bottom:11px}
+.stg-item>label{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--tx2);cursor:pointer}
+.stg-item input[type="number"],.stg-item select{width:100%;margin-top:4px;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--s2);color:var(--tx);font-family:var(--sans);font-size:12.5px}
+.ax-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ax-row .stg-item{margin-bottom:0}
+.tog{position:relative;width:38px;height:21px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0;position:absolute}
+.tog-sl{position:absolute;inset:0;background:var(--border);border-radius:21px;cursor:pointer;transition:background .2s}
+.tog-sl::before{content:'';position:absolute;width:15px;height:15px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
+.tog input:checked+.tog-sl{background:var(--accent)}
+.tog input:checked+.tog-sl::before{transform:translateX(17px)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--primary);color:#fff;padding:9px 20px;border-radius:50px;font-size:12px;font-weight:600;box-shadow:var(--shl);transition:transform .3s;z-index:9999}
+[data-theme="dark"] .toast{background:var(--accent);color:var(--bg)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.sep{width:1px;height:19px;background:var(--border);margin:0 3px}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="header-brand">
+    <div class="brand-icon"><i class="fa fa-flask-vial"></i></div>
+    <div class="brand-text"><h1>AcidBase Pro</h1><p>Titration Simulator · St. Mary High · M. Cole</p></div>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" id="theme-btn" title="Toggle dark/light mode"><i class="fa fa-moon" id="theme-icon"></i></button>
+    <a href="https://www.learnwithcole.com" class="home-link" title="Dashboard"><i class="fas fa-home"></i></a>
+  </div>
+</header>
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="sim"><i class="fa fa-flask"></i> Simulator</button>
+  <button class="tab-btn" data-tab="calc"><i class="fa fa-calculator"></i> pH Calculator</button>
+  <button class="tab-btn" data-tab="theory"><i class="fa fa-book-open"></i> Theory & Notes</button>
+  <button class="tab-btn" data-tab="samplecalc"><i class="fa fa-graduation-cap"></i> Sample Calculations</button>
+  <button class="tab-btn" data-tab="data"><i class="fa fa-table"></i> Data Table</button>
+  <button class="tab-btn" data-tab="settings"><i class="fa fa-sliders"></i> Settings</button>
+</nav>
+<main class="main">
+
+<!-- ══════════ SIMULATOR ══════════ -->
+<section class="tab-panel active" id="tab-sim">
+  <div class="card" style="margin-bottom:13px">
+    <div class="card-hd"><i class="fa fa-sliders"></i> Simulation Controls</div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:12px">
+      <div class="ctrl"><label>Titration Type</label>
+        <select id="tit-type">
+          <option value="strongAcidStrongBase">Strong Acid (HCl) + Strong Base (NaOH)</option>
+          <option value="weakAcidStrongBase">Weak Acid (CH₃COOH) + Strong Base (NaOH)</option>
+          <option value="strongAcidWeakBase">Strong Acid (HCl) + Weak Base (NH₃)</option>
+        </select></div>
+      <div class="ctrl"><label>Acid Conc. (mol/L)</label><input type="number" id="acid-conc" min="0.01" max="2" step="0.01" value="0.1"></div>
+      <div class="ctrl"><label>Base Conc. (mol/L)</label><input type="number" id="base-conc" min="0.01" max="2" step="0.01" value="0.1"></div>
+      <div class="ctrl"><label>Acid Volume (mL)</label><input type="number" id="acid-vol" min="5" max="100" step="1" value="25"></div>
+      <div class="ctrl"><label>Speed (×<span id="speed-val">10</span>)</label><input type="range" id="speed-range" min="1" max="30" value="10"></div>
+    </div>
+  </div>
+  <div class="add-row">
+    <span class="add-row-lbl">Add Base:</span>
+    <button class="btn btn-add" id="add-01">+0.1 mL</button>
+    <button class="btn btn-add" id="add-05">+0.5 mL</button>
+    <button class="btn btn-add" id="add-1">+1.0 mL</button>
+    <button class="btn btn-add" id="add-2">+2.0 mL</button>
+    <button class="btn btn-add" id="add-5">+5.0 mL</button>
+    <div class="sep"></div>
+    <button class="btn btn-primary" id="btn-start"><i class="fa fa-play"></i> Start</button>
+    <button class="btn btn-danger" id="btn-stop" disabled><i class="fa fa-stop"></i> Stop</button>
+    <button class="btn btn-neutral" id="btn-reset"><i class="fa fa-rotate-left"></i> Reset</button>
+    <div class="sep"></div>
+    <button class="btn btn-warn btn-sm" id="btn-capture"><i class="fa fa-crosshairs"></i> Capture Point</button>
+  </div>
+  <div class="sim-grid">
+    <div class="flask-col">
+      <div class="card">
+        <div class="card-hd"><i class="fa fa-flask"></i> Titration Flask</div>
+        <div class="flask-visual-wrap">
+          <div class="burette-assy">
+            <div class="b-body"><div class="b-liquid" id="b-liquid" style="height:80%"></div></div>
+            <div class="b-tip"></div><div class="b-nozzle"></div>
+          </div>
+          <div class="drop-zone"><div class="drop" id="drop"></div></div>
+          <div class="flask-svg-wrap">
+            <svg viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <clipPath id="flask-clip"><path d="M63,70 L16,178 Q14,196 80,196 Q146,196 144,178 L97,70 Z"/></clipPath>
+                <linearGradient id="g-glass" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="rgba(255,255,255,.04)"/>
+                  <stop offset="25%" stop-color="rgba(255,255,255,.26)"/>
+                  <stop offset="75%" stop-color="rgba(255,255,255,.07)"/>
+                  <stop offset="100%" stop-color="rgba(255,255,255,.03)"/>
+                </linearGradient>
+                <linearGradient id="g-sol" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" id="sol-g0" stop-color="rgba(220,80,80,.65)"/>
+                  <stop offset="100%" id="sol-g1" stop-color="rgba(200,50,50,.9)"/>
+                </linearGradient>
+              </defs>
+              <g clip-path="url(#flask-clip)">
+                <rect id="sol-fill" x="0" y="100" width="160" height="100" fill="url(#g-sol)"/>
+                <ellipse id="ripple" cx="80" cy="175" rx="0" ry="0" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5" opacity="0"/>
+              </g>
+              <path d="M63,70 L16,178 Q14,196 80,196 Q146,196 144,178 L97,70 Z" stroke="#A0C4D8" stroke-width="1.8" fill="url(#g-glass)"/>
+              <rect x="63" y="6" width="34" height="66" stroke="#A0C4D8" stroke-width="1.8" fill="url(#g-glass)"/>
+              <ellipse cx="80" cy="6" rx="17" ry="4" stroke="#A0C4D8" stroke-width="1.5" fill="none"/>
+              <path d="M78,72 L50,168" stroke="rgba(255,255,255,.22)" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="ph-badge">
+          <div class="ph-label">Current pH</div>
+          <div class="ph-value" id="ph-display" style="color:#D62839">1.00</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><i class="fa fa-chart-bar"></i> Readings</div>
+        <div class="stats-grid">
+          <div class="stat"><div class="stat-lbl">Base Added</div><div class="stat-val"><span id="base-added">0.0</span><span class="stat-unit">mL</span></div></div>
+          <div class="stat"><div class="stat-lbl">Total Vol.</div><div class="stat-val"><span id="total-vol">25.0</span><span class="stat-unit">mL</span></div></div>
+          <div class="stat"><div class="stat-lbl">Equiv. Vol.</div><div class="stat-val"><span id="eq-vol">25.0</span><span class="stat-unit">mL</span></div></div>
+          <div class="stat"><div class="stat-lbl">½ Equiv.</div><div class="stat-val"><span id="half-eq-vol">12.5</span><span class="stat-unit">mL</span></div></div>
+        </div>
+        <div class="eq-banner" id="eq-banner"><i class="fa fa-circle-check"></i><span id="eq-msg">Equivalence point reached!</span></div>
+        <div style="margin-top:9px;font-size:11px;color:var(--tx3)" id="sol-desc">HCl (strong acid) + NaOH (strong base)</div>
+      </div>
+    </div>
+    <div class="graph-col">
+      <div class="card">
+        <div class="card-hd"><i class="fa fa-chart-line"></i> Titration Curve <span style="margin-left:auto;font-size:10.5px;color:var(--tx3)">Hover for pH · Click to capture · <span id="hover-readout" style="font-family:var(--mono)">—</span></span></div>
+        <div class="canvas-wrap">
+          <canvas id="main-canvas" width="640" height="440"></canvas>
+          <canvas id="ov-canvas" width="640" height="440"></canvas>
+        </div>
+        <div class="graph-toolbar" style="margin-top:9px">
+          <button class="btn btn-neutral btn-sm" id="btn-autoscale"><i class="fa fa-expand"></i> Autoscale</button>
+          <button class="btn btn-neutral btn-sm" id="btn-export-graph"><i class="fa fa-image"></i> Save Graph</button>
+          <button class="btn btn-success btn-sm" id="btn-fullcurve"><i class="fa fa-wave-square"></i> Preview Full Curve</button>
+          <div class="sep"></div>
+          <button class="btn btn-warn btn-sm" id="btn-capture2"><i class="fa fa-crosshairs"></i> Capture</button>
+        </div>
+      </div>
+      <div class="card region-exp" id="region-exp">
+        <div style="color:var(--tx3);font-size:12px;font-style:italic">↑ Hover the titration curve to see region-specific calculations</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ pH CALCULATOR ══════════ -->
+<section class="tab-panel" id="tab-calc">
+  <div style="margin-bottom:14px"><h2 style="font-family:var(--disp);font-size:19px;color:var(--primary);margin-bottom:3px">pH Calculator</h2><p style="color:var(--tx3);font-size:12.5px">Complete step-by-step pH calculation for any point on any titration curve.</p></div>
+  <div class="calc-layout">
+    <div class="card">
+      <div class="card-hd"><i class="fa fa-sliders"></i> Parameters</div>
+      <div class="fg"><label>Titration Type</label><select id="c-type"><option value="strongAcidStrongBase">Strong Acid (HCl) + Strong Base (NaOH)</option><option value="weakAcidStrongBase">Weak Acid (CH₃COOH) + Strong Base (NaOH)</option><option value="strongAcidWeakBase">Strong Acid (HCl) + Weak Base (NH₃)</option></select></div>
+      <div class="row2"><div class="fg"><label>Acid Conc. (mol/L)</label><input type="number" id="c-ca" value="0.1" min="0.001" max="10" step="0.001"></div><div class="fg"><label>Acid Volume (mL)</label><input type="number" id="c-va" value="25" min="1" max="500" step="0.1"></div></div>
+      <div class="row2"><div class="fg"><label>Base Conc. (mol/L)</label><input type="number" id="c-cb" value="0.1" min="0.001" max="10" step="0.001"></div><div class="fg"><label>Base Volume Added (mL)</label><input type="number" id="c-vb" value="0" min="0" max="500" step="0.1"></div></div>
+      <button class="btn btn-primary" style="width:100%;padding:10px;margin-top:4px" id="btn-calc"><i class="fa fa-calculator"></i> Calculate pH</button>
+      <div style="margin-top:12px;font-size:11.5px;color:var(--tx3);background:var(--s2);border-radius:7px;padding:9px 12px;border:1px solid var(--border);line-height:1.8">
+        <strong style="color:var(--tx2)">Constants used:</strong><br>
+        Kₐ(CH₃COOH) = 1.8×10⁻⁵ | pKₐ = 4.745<br>
+        Kb(NH₃) = 1.8×10⁻⁵ | pKb = 4.745<br>
+        Ka(NH₄⁺) = Kw/Kb = 5.56×10⁻¹⁰ | pKa = 9.255<br>
+        Kw = 1.0×10⁻¹⁴ at 25°C
+      </div>
+    </div>
+    <div class="card"><div class="card-hd"><i class="fa fa-list-check"></i> Step-by-Step Solution</div>
+      <div class="calc-result" id="calc-result"><div class="calc-empty"><i class="fa fa-calculator" style="font-size:26px;display:block;margin-bottom:9px;opacity:.3"></i>Enter values and click <strong>Calculate pH</strong></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ THEORY ══════════ -->
+<section class="tab-panel" id="tab-theory">
+  <div class="theory-wrap">
+    <aside class="theory-toc card"><div class="card-hd"><i class="fa fa-list"></i> Contents</div>
+      <ul class="toc-list">
+        <li><a href="#t1">1. What is Titration?</a></li><li><a href="#t2">2. Acid-Base Theory</a></li>
+        <li><a href="#t3">3. Strong vs Weak</a></li><li><a href="#t4">4. Titration Curve</a></li>
+        <li><a href="#t5">5. Henderson-Hasselbalch</a></li><li><a href="#t6">6. Buffer Solutions</a></li>
+        <li><a href="#t7">7. Equivalence Point</a></li><li><a href="#t8">8. Indicators</a></li>
+        <li><a href="#t9">9. Key Formulas</a></li>
+      </ul>
+    </aside>
+    <div class="theory-body">
+      <h2 id="t1">What is Titration?</h2>
+      <p>A <strong>titration</strong> is a quantitative analytical technique used to determine the unknown concentration of a solution (the <em>analyte</em>) by reacting it with a standard solution of precisely known concentration (the <em>titrant</em>), delivered from a graduated glass cylinder called a <strong>burette</strong>.</p>
+      <p>In an acid-base titration, the acid and base react until the stoichiometric <strong>equivalence point</strong> is reached — the point at which the moles of titrant exactly equal the moles of analyte. An indicator or pH electrode identifies this endpoint.</p>
+      <div class="info-hl"><strong>Key Principle:</strong> At the equivalence point, moles of acid = moles of base (for a 1:1 reaction).<br><code style="font-family:var(--mono)">n<sub>acid</sub> = C<sub>acid</sub>×V<sub>acid</sub> = C<sub>base</sub>×V<sub>base</sub> = n<sub>base</sub></code></div>
+      <h2 id="t2">Acid-Base Chemistry (Brønsted-Lowry)</h2>
+      <p>According to the <strong>Brønsted-Lowry theory</strong>, an acid is a proton (H⁺) donor and a base is a proton acceptor. Every acid has a conjugate base and every base has a conjugate acid.</p>
+      <p>For any acid HA dissociating: <code style="font-family:var(--mono)">HA + H₂O ⇌ H₃O⁺ + A⁻</code></p>
+      <div class="eq-box"><div class="eq-lbl">Acid Dissociation Constant</div><div class="eq-val">Ka = [H₃O⁺][A⁻] / [HA]     pKa = −log₁₀(Ka)
+Kw = [H⁺][OH⁻] = 1.0×10⁻¹⁴ (at 25°C)
+Ka × Kb = Kw   (conjugate pair)     pKa + pKb = 14</div></div>
+      <h2 id="t3">Strong vs Weak Acids and Bases</h2>
+      <h3>Strong Acids and Bases</h3>
+      <p>Strong acids (HCl, HNO₃, H₂SO₄) and strong bases (NaOH, KOH) dissociate <em>completely</em> in water. For HCl: [H⁺] = C<sub>HCl</sub> directly. For NaOH: [OH⁻] = C<sub>NaOH</sub> directly.</p>
+      <h3>Weak Acids and Bases</h3>
+      <p>Weak acids (CH₃COOH, Ka = 1.8×10⁻⁵) and weak bases (NH₃, Kb = 1.8×10⁻⁵) only partially dissociate. Their degree of dissociation depends on Ka/Kb and concentration.</p>
+      <div class="eq-box"><div class="eq-lbl">Initial pH of a Weak Acid (simplified, valid when Ka ≪ Ca)</div><div class="eq-val">[H⁺] ≈ √(Ka × Ca)
+pH = ½(pKa − log Ca)</div></div>
+      <h2 id="t4">The Titration Curve</h2>
+      <table class="tbl"><tr><th>System</th><th>Initial pH</th><th>Equiv. pH</th><th>Curve Feature</th></tr>
+        <tr><td>Strong acid + Strong base</td><td>~1 (0.1M HCl)</td><td>7.00</td><td>Sharp S-curve; steep inflection at equivalence</td></tr>
+        <tr><td>Weak acid + Strong base</td><td>~2.87 (0.1M CH₃COOH)</td><td>&gt;7 (~8.72)</td><td>Buffer plateau; gradual rise; inflection above 7</td></tr>
+        <tr><td>Strong acid + Weak base</td><td>~1</td><td>&lt;7 (~5.28)</td><td>Sharp initially; buffer plateau after equivalence</td></tr></table>
+      <h2 id="t5">Henderson-Hasselbalch Equation</h2>
+      <div class="eq-box"><div class="eq-lbl">Henderson-Hasselbalch</div><div class="eq-val">pH = pKa + log₁₀([A⁻] / [HA])
+
+[A⁻] = conjugate base concentration (or moles, same V)
+[HA] = weak acid remaining
+pKa = −log₁₀(Ka)</div></div>
+      <p>Since volume is equal for both species in the same flask, <strong>moles</strong> can be used directly in the ratio: pH = pKa + log(n<sub>A⁻</sub>/n<sub>HA</sub>).</p>
+      <h2 id="t6">Buffer Solutions</h2>
+      <p>A buffer resists pH change upon addition of small amounts of acid or base. It consists of a weak acid and its conjugate base in comparable concentrations. Maximum buffering capacity occurs when [A⁻] = [HA], i.e., at the <strong>half-equivalence point</strong> where pH = pKa.</p>
+      <div class="info-hl"><strong>Buffer Range:</strong> Effective within ±1 pH unit of pKa. For acetic acid: pH 3.74 – 5.74</div>
+      <h2 id="t7">The Equivalence Point</h2>
+      <ul>
+        <li><strong>Strong acid + Strong base →</strong> NaCl (neutral salt); pH = 7.00</li>
+        <li><strong>Weak acid + Strong base →</strong> CH₃COONa (alkaline salt); pH &gt; 7 (acetate hydrolyses)</li>
+        <li><strong>Strong acid + Weak base →</strong> NH₄Cl (acidic salt); pH &lt; 7 (ammonium hydrolyses)</li>
+      </ul>
+      <div class="eq-box"><div class="eq-lbl">Equivalence Point pH via Hydrolysis</div><div class="eq-val">Weak acid + Strong base:  [OH⁻] = √(Kb(A⁻) × cA⁻)  where Kb = Kw/Ka
+Strong acid + Weak base:  [H⁺]  = √(Ka(BH⁺) × cBH⁺) where Ka = Kw/Kb</div></div>
+      <h2 id="t8">Indicators</h2>
+      <table class="tbl"><tr><th>Indicator</th><th>pH Range</th><th>Colour Change</th><th>Best for</th></tr>
+        <tr><td>Methyl orange</td><td>3.1 – 4.4</td><td>Red → Yellow</td><td>Strong acid + Strong/weak base</td></tr>
+        <tr><td>Methyl red</td><td>4.4 – 6.2</td><td>Red → Yellow</td><td>Strong acid + Strong base</td></tr>
+        <tr><td>Bromothymol blue</td><td>6.0 – 7.6</td><td>Yellow → Blue</td><td>Strong acid + Strong base (precise)</td></tr>
+        <tr><td>Phenolphthalein</td><td>8.2 – 10.0</td><td>Colourless → Pink</td><td>Weak acid + Strong base</td></tr>
+        <tr><td>Thymol blue</td><td>8.0 – 9.6</td><td>Yellow → Blue</td><td>Weak acid + Strong base</td></tr></table>
+      <h2 id="t9">Key Formulas Quick Reference</h2>
+      <div class="eq-box"><div class="eq-lbl">Essential Equations</div><div class="eq-val">pH = −log[H⁺]         pOH = −log[OH⁻]         pH + pOH = 14 (25°C)
+
+Strong acid:    [H⁺] = Cacid
+Strong base:    [OH⁻] = Cbase
+
+Weak acid initial:    [H⁺] = √(Ka×Ca),   pH = ½(pKa−logCa)
+Weak base initial:    [OH⁻] = √(Kb×Cb),  pOH = ½(pKb−logCb)
+
+Buffer (H-H):   pH = pKa + log([A⁻]/[HA])
+Half-equiv pt:  pH = pKa  (when [A⁻] = [HA])
+
+Equivalence (HA+NaOH):  [OH⁻] = √(Kw/Ka × cA⁻)  → pH = 14+log[OH⁻]
+Equivalence (HCl+NH₃):  [H⁺]  = √(Kw/Kb × cBH⁺) → pH = −log[H⁺]
+
+After equiv (excess NaOH):  pH = 14 + log[OH⁻]excess
+After equiv (excess HCl):   pH = −log[H⁺]excess</div></div>
+    </div>
+  </div>
+</section>
+<!-- ══════════ SAMPLE CALCULATIONS ══════════ -->
+<section class="tab-panel" id="tab-samplecalc">
+  <div style="margin-bottom:14px"><h2 style="font-family:var(--disp);font-size:19px;color:var(--primary);margin-bottom:3px">Sample Calculations</h2><p style="color:var(--tx3);font-size:12.5px">Fully worked examples for every region of each titration curve. Default: Ca = Cb = 0.1 mol/L, Va = 25.0 mL → Veq = 25.0 mL.</p></div>
+  <div class="sc-type-tabs">
+    <button class="sc-tab active" data-sc="sc1">Strong Acid + Strong Base</button>
+    <button class="sc-tab" data-sc="sc2">Weak Acid + Strong Base</button>
+    <button class="sc-tab" data-sc="sc3">Strong Acid + Weak Base</button>
+  </div>
+
+  <div class="sc-section active" id="sc1">
+    <p style="color:var(--tx2);font-size:12.5px;margin-bottom:12px">Reaction: <strong>HCl(aq) + NaOH(aq) → NaCl(aq) + H₂O(l)</strong> | Strong acid, complete dissociation, no buffer region</p>
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-init">Region 1</span> Initial pH (Vb = 0 mL)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>No base added — pure strong acid. HCl dissociates 100%, so [H⁺] = Cacid directly.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 0.1 mol/L HCl, 25 mL</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c">HCl → H⁺ + Cl⁻ (complete dissociation)<br><span class="eq">[H⁺] = 0.1 mol/L</span></div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c"><span class="eq">pH = −log(0.1) = −log(10⁻¹) = 1.00</span></div></div>
+          <div class="ans-box">pH = 1.00</div></div></div></div>
+
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-buf">Region 2</span> Before Equivalence — Excess HCl (Vb = 10.0 mL)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>NaOH is added but HCl remains in excess. The unreacted H⁺ determines pH.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 10.0 mL NaOH added</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c">Calculate moles:<span class="eq">n(HCl)  = 0.025 L × 0.1 mol/L = 2.50×10⁻³ mol
+n(NaOH) = 0.010 L × 0.1 mol/L = 1.00×10⁻³ mol</span></div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c">Excess H⁺:<span class="eq">n(H⁺)excess = (2.50 − 1.00)×10⁻³ = 1.50×10⁻³ mol</span></div></div>
+          <div class="ws"><div class="ws-n">3</div><div class="ws-c">Total volume:<span class="eq">V = 25.0 + 10.0 = 35.0 mL = 0.0350 L
+[H⁺] = 1.50×10⁻³ / 0.0350 = 0.04286 mol/L</span></div></div>
+          <div class="ws"><div class="ws-n">4</div><div class="ws-c"><span class="eq">pH = −log(0.04286) = 1.37</span></div></div>
+          <div class="ans-box">pH = 1.37</div></div></div></div>
+
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-eq">Region 3</span> Equivalence Point (Vb = 25.0 mL)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>All HCl neutralised → NaCl(aq). NaCl is a neutral salt; neither Na⁺ nor Cl⁻ hydrolyse. Solution is essentially pure water.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 25.0 mL NaOH added</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c">n(HCl) = n(NaOH) = 2.50×10⁻³ mol → complete neutralisation<span class="eq">HCl + NaOH → NaCl + H₂O</span></div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c">NaCl does not hydrolyse. [H⁺] = [OH⁻] = √Kw = 10⁻⁷<span class="eq">pH = 7.00</span></div></div>
+          <div class="ans-box">pH = 7.00 (neutral)</div></div></div></div>
+
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-after">Region 4</span> After Equivalence — Excess NaOH (Vb = 30.0 mL)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>Excess NaOH dominates. The excess OH⁻ ions control pH.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 30.0 mL NaOH added</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c"><span class="eq">n(OH⁻)excess = (3.00 − 2.50)×10⁻³ = 5.00×10⁻⁴ mol
+[OH⁻] = 5.00×10⁻⁴ / 0.055 = 9.09×10⁻³ mol/L</span></div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c"><span class="eq">pOH = −log(9.09×10⁻³) = 2.04
+pH  = 14 − 2.04 = 11.96</span></div></div>
+          <div class="ans-box">pH = 11.96</div></div></div></div>
+  </div>
+
+  <div class="sc-section" id="sc2">
+    <p style="color:var(--tx2);font-size:12.5px;margin-bottom:12px">Reaction: <strong>CH₃COOH + NaOH → CH₃COONa + H₂O</strong> | pKₐ = 4.745 | Ka = 1.8×10⁻⁵ | Equivalence point pH &gt; 7</p>
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-init">Region 1</span> Initial pH — Pure Weak Acid (Vb = 0)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>Acetic acid partially dissociates. Use ICE table with approximation Ka ≪ Ca.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 0.1 mol/L CH₃COOH, 25 mL</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c">ICE table for CH₃COOH ⇌ H⁺ + CH₃COO⁻:<span class="eq">Ka = x²/(0.1 − x) ≈ x²/0.1 = 1.8×10⁻⁵
+x² = 1.8×10⁻⁶</span></div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c"><span class="eq">[H⁺] = √(1.8×10⁻⁶) = 1.342×10⁻³ mol/L
+pH = −log(1.342×10⁻³) = 2.87</span></div></div>
+          <div class="ans-box">pH = 2.87</div></div></div></div>
+
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-buf">Region 2</span> Buffer Region — Henderson-Hasselbalch (Vb = 10.0 mL)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>NaOH converts CH₃COOH → CH₃COO⁻. Both weak acid and conjugate base coexist — classic buffer. Use Henderson-Hasselbalch.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 10.0 mL NaOH added</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c"><span class="eq">n(CH₃COOH)initial = 0.025 × 0.1 = 2.50×10⁻³ mol
+n(NaOH)           = 0.010 × 0.1 = 1.00×10⁻³ mol</span></div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c">After neutralisation:<span class="eq">n(CH₃COOH)remaining = (2.50 − 1.00)×10⁻³ = 1.50×10⁻³ mol
+n(CH₃COO⁻)formed   = 1.00×10⁻³ mol</span></div></div>
+          <div class="ws"><div class="ws-n">3</div><div class="ws-c">Henderson-Hasselbalch (moles, same volume):<span class="eq">pH = pKa + log(n(A⁻)/n(HA))
+pH = 4.745 + log(1.00/1.50)
+pH = 4.745 + log(0.6667)
+pH = 4.745 − 0.176 = 4.57</span></div></div>
+          <div class="ans-box">pH = 4.57</div></div></div></div>
+
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-half">Region 3</span> Half-Equivalence Point (Vb = 12.5 mL)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>Exactly half the acid is neutralised: n(A⁻) = n(HA). The ratio in H-H = 1. pH = pKa exactly.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 12.5 mL NaOH (= Veq/2)</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c">n(NaOH) = 0.0125 × 0.1 = 1.25×10⁻³ mol = ½ × n(CH₃COOH)<br>∴ n(CH₃COO⁻) = n(CH₃COOH) = 1.25×10⁻³ mol</div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c"><span class="eq">pH = pKa + log(1.25×10⁻³ / 1.25×10⁻³)
+pH = pKa + log(1) = pKa + 0 = 4.745</span></div></div>
+          <div class="ws"><div class="ws-n">3</div><div class="ws-c">This is used to experimentally determine Ka: Ka = 10⁻ᵖᴴ at half-equiv. point.</div></div>
+          <div class="ans-box">pH = pKa = 4.745 (Key landmark on the curve!)</div></div></div></div>
+
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-eq">Region 4</span> Equivalence Point (Vb = 25.0 mL)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>All acetic acid → sodium acetate. CH₃COO⁻ is the conjugate base of a weak acid — it hydrolyses to give a basic solution.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 25.0 mL NaOH added</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c">n(CH₃COO⁻) = 2.50×10⁻³ mol in V = 50.0 mL<span class="eq">[CH₃COO⁻] = 2.50×10⁻³ / 0.050 = 0.050 mol/L</span></div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c">Hydrolysis: CH₃COO⁻ + H₂O ⇌ CH₃COOH + OH⁻<span class="eq">Kb(CH₃COO⁻) = Kw/Ka = 1.0×10⁻¹⁴ / 1.8×10⁻⁵ = 5.56×10⁻¹⁰</span></div></div>
+          <div class="ws"><div class="ws-n">3</div><div class="ws-c"><span class="eq">[OH⁻] = √(Kb × c) = √(5.56×10⁻¹⁰ × 0.050)
+       = √(2.78×10⁻¹¹) = 5.27×10⁻⁶ mol/L</span></div></div>
+          <div class="ws"><div class="ws-n">4</div><div class="ws-c"><span class="eq">pOH = −log(5.27×10⁻⁶) = 5.278
+pH  = 14 − 5.278 = 8.72</span></div></div>
+          <div class="ans-box">pH = 8.72 (basic — weak acid + strong base equivalence is always &gt; 7)</div></div></div></div>
+
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-after">Region 5</span> After Equivalence — Excess NaOH (Vb = 30.0 mL)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>Excess NaOH dominates; acetate hydrolysis is negligible compared to strong base.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 30.0 mL NaOH added</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c"><span class="eq">n(OH⁻)excess = (3.00 − 2.50)×10⁻³ = 5.00×10⁻⁴ mol
+[OH⁻] = 5.00×10⁻⁴ / 0.055 = 9.09×10⁻³ mol/L</span></div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c"><span class="eq">pOH = 2.04,  pH = 11.96</span></div></div>
+          <div class="ans-box">pH = 11.96</div></div></div></div>
+  </div>
+
+  <div class="sc-section" id="sc3">
+    <p style="color:var(--tx2);font-size:12.5px;margin-bottom:12px">Reaction: <strong>HCl(aq) + NH₃(aq) → NH₄Cl(aq)</strong> | pKb(NH₃) = 4.745 | pKa(NH₄⁺) = 9.255 | Equivalence point pH &lt; 7</p>
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-init">Region 1</span> Initial pH — Pure Strong Acid (Vb = 0)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>HCl in flask; no base added yet. Complete dissociation.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 0.1 mol/L HCl, 25 mL</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c"><span class="eq">[H⁺] = 0.100 mol/L → pH = −log(0.100) = 1.00</span></div></div>
+          <div class="ans-box">pH = 1.00</div></div></div></div>
+
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-buf">Region 2</span> Before Equivalence — Excess Strong Acid (Vb = 10.0 mL)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>NH₃ reacts completely with H⁺: H⁺ + NH₃ → NH₄⁺. Remaining excess H⁺ determines pH.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 10.0 mL NH₃ added</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c"><span class="eq">n(HCl) = 2.50×10⁻³ mol;  n(NH₃) = 1.00×10⁻³ mol
+n(H⁺)excess = (2.50 − 1.00)×10⁻³ = 1.50×10⁻³ mol</span></div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c"><span class="eq">V = 35.0 mL = 0.035 L;  [H⁺] = 1.50×10⁻³/0.035 = 0.04286 mol/L
+pH = 1.37</span></div></div>
+          <div class="ans-box">pH = 1.37</div></div></div></div>
+
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-eq">Region 3</span> Equivalence Point (Vb = 25.0 mL)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>All HCl → NH₄Cl. NH₄⁺ is the conjugate acid of weak base NH₃ — it hydrolyses to give an acidic solution.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 25.0 mL NH₃ added</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c">n(NH₄⁺) = 2.50×10⁻³ mol in 50.0 mL<span class="eq">[NH₄⁺] = 0.050 mol/L</span></div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c">Hydrolysis: NH₄⁺ + H₂O ⇌ NH₃ + H₃O⁺<span class="eq">Ka(NH₄⁺) = Kw/Kb = 1.0×10⁻¹⁴/1.8×10⁻⁵ = 5.56×10⁻¹⁰</span></div></div>
+          <div class="ws"><div class="ws-n">3</div><div class="ws-c"><span class="eq">[H⁺] = √(Ka × c) = √(5.56×10⁻¹⁰ × 0.050)
+     = √(2.78×10⁻¹¹) = 5.27×10⁻⁶ mol/L
+pH  = −log(5.27×10⁻⁶) = 5.28</span></div></div>
+          <div class="ans-box">pH = 5.28 (acidic — strong acid + weak base equivalence is always &lt; 7)</div></div></div></div>
+
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-buf">Region 4</span> After Equivalence — NH₄⁺/NH₃ Buffer (Vb = 30.0 mL)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>Excess NH₃ coexists with NH₄⁺ — buffer region. Use H-H with pKa(NH₄⁺) = 9.255.</p>
+        <div class="worked"><div class="worked-title">Worked Example — 30.0 mL NH₃ added</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c"><span class="eq">n(NH₃)excess = (3.00 − 2.50)×10⁻³ = 5.00×10⁻⁴ mol
+n(NH₄⁺) = n(HCl) = 2.50×10⁻³ mol</span></div></div>
+          <div class="ws"><div class="ws-n">2</div><div class="ws-c">H-H for NH₄⁺/NH₃ system:<span class="eq">pH = pKa(NH₄⁺) + log([NH₃]/[NH₄⁺])
+pH = 9.255 + log(5.00×10⁻⁴ / 2.50×10⁻³)
+pH = 9.255 + log(0.200) = 9.255 − 0.699 = 8.56</span></div></div>
+          <div class="ans-box">pH = 8.56</div></div></div></div>
+
+    <div class="reg-card"><div class="reg-card-hd" onclick="toggleCard(this)"><h3><span class="badge tag-half">Region 5</span> Half-Equivalence of NH₄⁺/NH₃ Buffer (Post-Equiv.)</h3><i class="fa fa-chevron-down ti"></i></div>
+      <div class="reg-card-body"><p>When n(NH₃)excess = n(NH₄⁺) after the equivalence point, pH = pKa(NH₄⁺).</p>
+        <div class="worked"><div class="worked-title">When [NH₃]excess = [NH₄⁺]</div>
+          <div class="ws"><div class="ws-n">1</div><div class="ws-c"><span class="eq">pH = pKa(NH₄⁺) + log(1) = 9.255</span></div></div>
+          <div class="ans-box">pH = pKa(NH₄⁺) = 9.255</div></div></div></div>
+  </div>
+</section>
+
+<!-- ══════════ DATA TABLE ══════════ -->
+<section class="tab-panel" id="tab-data">
+  <div style="margin-bottom:14px"><h2 style="font-family:var(--disp);font-size:19px;color:var(--primary);margin-bottom:3px">Data Table</h2><p style="color:var(--tx3);font-size:12.5px">Capture data points during simulation or by clicking the graph. Export as CSV for analysis in Excel or Google Sheets.</p></div>
+  <div class="ds-row" id="data-summary"></div>
+  <div class="data-toolbar">
+    <button class="btn btn-primary btn-sm" id="btn-capture3"><i class="fa fa-plus"></i> Capture Current</button>
+    <button class="btn btn-success btn-sm" id="btn-export"><i class="fa fa-file-csv"></i> Export CSV</button>
+    <button class="btn btn-neutral btn-sm" id="btn-clear-data"><i class="fa fa-trash"></i> Clear All</button>
+    <span style="margin-left:auto;font-size:11.5px;color:var(--tx3)"><span id="data-count">0</span> points captured</span>
+  </div>
+  <div class="data-wrap">
+    <table class="data-tbl">
+      <thead><tr><th>#</th><th>Volume Base (mL)</th><th>pH</th><th>[H⁺] (mol/L)</th><th>Region</th><th>Titration Type</th><th>Timestamp</th></tr></thead>
+      <tbody id="data-tbody"><tr><td colspan="7" class="data-empty"><i class="fa fa-database" style="font-size:22px;display:block;margin-bottom:7px;opacity:.3"></i>No data yet. Use Simulator tab to capture points.</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════ SETTINGS ══════════ -->
+<section class="tab-panel" id="tab-settings">
+  <div style="margin-bottom:14px"><h2 style="font-family:var(--disp);font-size:19px;color:var(--primary);margin-bottom:3px">Settings</h2><p style="color:var(--tx3);font-size:12.5px">Customise axes, graph appearance, and simulation parameters.</p></div>
+  <div class="stg-grid">
+    <div class="card stg-section"><h3><i class="fa fa-chart-line"></i> Graph Axes</h3>
+      <div class="stg-item"><label>Autoscale Y-axis <label class="tog"><input type="checkbox" id="s-autoscale"><span class="tog-sl"></span></label></label></div>
+      <div class="stg-item"><label>X-axis range (Volume, mL)</label><div class="ax-row"><div class="stg-item"><label>Min</label><input type="number" id="s-xmin" value="0" min="0"></div><div class="stg-item"><label>Max</label><input type="number" id="s-xmax" value="50" min="1" max="200"></div></div></div>
+      <div class="stg-item"><label>Y-axis range (pH)</label><div class="ax-row"><div class="stg-item"><label>Min</label><input type="number" id="s-ymin" value="0" min="0" max="13"></div><div class="stg-item"><label>Max</label><input type="number" id="s-ymax" value="14" min="1" max="14"></div></div></div>
+      <button class="btn btn-primary btn-sm" style="margin-top:5px" id="s-apply-axes"><i class="fa fa-check"></i> Apply Axes</button>
+    </div>
+    <div class="card stg-section"><h3><i class="fa fa-palette"></i> Graph Display</h3>
+      <div class="stg-item"><label>Show grid lines <label class="tog"><input type="checkbox" id="s-grid" checked><span class="tog-sl"></span></label></label></div>
+      <div class="stg-item"><label>Show equivalence marker <label class="tog"><input type="checkbox" id="s-eq-marker" checked><span class="tog-sl"></span></label></label></div>
+      <div class="stg-item"><label>Show ½-equivalence marker <label class="tog"><input type="checkbox" id="s-halfq-marker" checked><span class="tog-sl"></span></label></label></div>
+      <div class="stg-item"><label>Show buffer zone shading <label class="tog"><input type="checkbox" id="s-buf-shade"><span class="tog-sl"></span></label></label></div>
+      <div class="stg-item"><label>Curve line width (px)</label><input type="number" id="s-linewidth" value="2.5" min="0.5" max="6" step="0.5"></div>
+    </div>
+    <div class="card stg-section"><h3><i class="fa fa-flask"></i> Simulation</h3>
+      <div class="stg-item"><label>Show indicator colour in flask <label class="tog"><input type="checkbox" id="s-indicator" checked><span class="tog-sl"></span></label></label></div>
+      <div class="stg-item"><label>Enable drop animation <label class="tog"><input type="checkbox" id="s-drops" checked><span class="tog-sl"></span></label></label></div>
+    </div>
+    <div class="card stg-section"><h3><i class="fa fa-display"></i> Appearance</h3>
+      <div class="stg-item"><label>Dark mode <label class="tog"><input type="checkbox" id="s-dark"><span class="tog-sl"></span></label></label></div>
+      <div class="stg-item"><label>Font size</label><select id="s-fontsize"><option value="13">Small (13px)</option><option value="14" selected>Medium (14px)</option><option value="15">Large (15px)</option><option value="16">X-Large (16px)</option></select></div>
+    </div>
+  </div>
+</section>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+// ═══════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════
+const KA   = 1.8e-5;
+const KB   = 1.8e-5;
+const KW   = 1.0e-14;
+const KA_NH4 = KW / KB;
+const KB_AC  = KW / KA;
+const PKA    = -Math.log10(KA);
+const PKA_NH4= -Math.log10(KA_NH4);
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+const ST = {
+  titType:'strongAcidStrongBase', cA:0.1, cB:0.1, vA:25,
+  vB:0, pH:1.0, running:false, speed:10, animId:null,
+  simData:[], capturedData:[],
+  xMin:0, xMax:50, yMin:0, yMax:14,
+  autoScale:false, showGrid:true, showEqMarker:true, showHalfMarker:true,
+  showBufShade:false, lineWidth:2.5, showDrops:true,
+  dark:false, fullPreview:false
+};
+
+// ═══════════════════════════════════════════════
+// pH ENGINE
+// ═══════════════════════════════════════════════
+function calcPH(vA, vB, type, cA, cB) {
+  type = type ?? ST.titType; cA = cA ?? ST.cA; cB = cB ?? ST.cB;
+  vA = vA ?? ST.vA;
+  const nA = (vA/1000)*cA, nB = (vB/1000)*cB, V = (vA+vB)/1000;
+  let pH;
+  if(type==='strongAcidStrongBase'){
+    if(nA>nB) pH=-Math.log10((nA-nB)/V);
+    else if(nB>nA) pH=14+Math.log10((nB-nA)/V);
+    else pH=7;
+  } else if(type==='weakAcidStrongBase'){
+    if(vB<=0) pH=-Math.log10(Math.sqrt(KA*(nA/V)));
+    else if(nB<nA){ const cHA=(nA-nB)/V,cA_=nB/V; pH=PKA+Math.log10(cA_/cHA); }
+    else if(nB>nA) pH=14+Math.log10((nB-nA)/V);
+    else { const cAeq=nA/V; pH=14+Math.log10(Math.sqrt(KB_AC*cAeq)); }
+  } else {
+    if(vB<=0) pH=-Math.log10(nA/V);
+    else if(nB<nA) pH=-Math.log10((nA-nB)/V);
+    else if(nB>nA){ const cN=(nB-nA)/V,cNH4=nA/V; pH=PKA_NH4+Math.log10(cN/cNH4); }
+    else { const c=nA/V; pH=-Math.log10(Math.sqrt(KA_NH4*c)); }
+  }
+  return Math.max(0, Math.min(14, isNaN(pH)?7:pH));
+}
+
+function getEqVol(){ return (ST.vA * ST.cA) / ST.cB; }
+function getHalfEqVol(){ return getEqVol() / 2; }
+
+function getSolColor(pH){
+  const stops=[[0,[230,30,30]],[1,[220,40,0]],[3,[240,110,0]],[5,[220,195,0]],
+    [6,[120,200,0]],[7,[0,185,80]],[8,[0,160,140]],[10,[0,100,210]],
+    [11,[60,0,220]],[12,[100,0,180]],[14,[90,0,110]]];
+  pH=Math.max(0,Math.min(14,pH));
+  for(let i=0;i<stops.length-1;i++){
+    if(pH>=stops[i][0]&&pH<=stops[i+1][0]){
+      const t=(pH-stops[i][0])/(stops[i+1][0]-stops[i][0]);
+      const r=Math.round(stops[i][1][0]+t*(stops[i+1][1][0]-stops[i][1][0]));
+      const g=Math.round(stops[i][1][1]+t*(stops[i+1][1][1]-stops[i][1][1]));
+      const b=Math.round(stops[i][1][2]+t*(stops[i+1][1][2]-stops[i][1][2]));
+      return `rgb(${r},${g},${b})`;
+    }
+  }
+  return 'rgb(90,0,110)';
+}
+
+function getRegion(vol){
+  const eqV=getEqVol(), halfV=eqV/2;
+  const nA=(ST.vA/1000)*ST.cA, nB=(vol/1000)*ST.cB, V=(ST.vA+vol)/1000;
+  const pH=calcPH(ST.vA,vol);
+  const tol=Math.max(0.18,eqV*0.007);
+  const t=ST.titType;
+  if(t==='strongAcidStrongBase'){
+    if(vol<=0) return {label:'Initial',tag:'tag-init',title:'Pure Strong Acid',formula:'pH = −log(Cacid)',calc:`[H⁺] = ${ST.cA.toFixed(4)} mol/L\npH = ${pH.toFixed(4)}`};
+    if(Math.abs(vol-eqV)<=tol) return {label:'Equivalence',tag:'tag-eq',title:'Neutral Salt (NaCl) — pH = 7',formula:'n(HCl) = n(NaOH); NaCl neutral salt',calc:`Veq = ${eqV.toFixed(2)} mL\npH = 7.0000`};
+    if(nB<nA){const cH=(nA-nB)/V;return{label:'Before Equiv.',tag:'tag-buf',title:'Excess Strong Acid',formula:'pH = −log([H⁺]excess)\n[H⁺]excess = (nHCl − nNaOH)/V',calc:`n(H⁺)ex = ${(nA-nB).toExponential(3)} mol\n[H⁺] = ${cH.toExponential(3)} mol/L\npH = ${pH.toFixed(4)}`};}
+    const cOH=(nB-nA)/V;return{label:'After Equiv.',tag:'tag-after',title:'Excess Strong Base',formula:'pH = 14 + log([OH⁻]excess)\n[OH⁻]ex = (nNaOH − nHCl)/V',calc:`n(OH⁻)ex = ${(nB-nA).toExponential(3)} mol\n[OH⁻] = ${cOH.toExponential(3)} mol/L\npOH = ${(-Math.log10(cOH)).toFixed(4)}\npH = ${pH.toFixed(4)}`};
+  }
+  if(t==='weakAcidStrongBase'){
+    if(vol<=0) return {label:'Initial',tag:'tag-init',title:'Pure Weak Acid (Partial Dissociation)',formula:'[H⁺] = √(Ka × Ca)\npH = ½(pKa − log Ca)',calc:`Ka = 1.8×10⁻⁵, Ca = ${(nA/V).toFixed(4)} mol/L\n[H⁺] = ${Math.sqrt(KA*(nA/V)).toExponential(3)}\npH = ${pH.toFixed(4)}`};
+    if(Math.abs(vol-eqV)<=tol) return {label:'Equivalence',tag:'tag-eq',title:'Acetate Hydrolysis (pH > 7)',formula:'[OH⁻] = √(Kb(A⁻) × c(A⁻))\nKb(A⁻) = Kw/Ka\npH = 14 + log[OH⁻]',calc:`c(CH₃COO⁻) = ${(nA/V).toFixed(4)} mol/L\nKb = ${KB_AC.toExponential(3)}\n[OH⁻] = ${Math.sqrt(KB_AC*(nA/V)).toExponential(3)}\npH = ${pH.toFixed(4)}`};
+    if(Math.abs(vol-halfV)<=tol) return {label:'½ Equiv.',tag:'tag-half',title:'Half-Equivalence Point — pH = pKa',formula:'[A⁻] = [HA] → log([A⁻]/[HA]) = 0\npH = pKa',calc:`Vb = Veq/2 = ${halfV.toFixed(2)} mL\nn(A⁻) = n(HA)\npH = pKa = ${PKA.toFixed(4)}\nActual = ${pH.toFixed(4)}`};
+    if(nB<nA){const cHA=(nA-nB)/V,cA_=nB/V;return{label:'Buffer (H-H)',tag:'tag-buf',title:'Buffer Region — Henderson-Hasselbalch',formula:'pH = pKa + log([A⁻]/[HA])\npKa(CH₃COOH) = 4.745',calc:`pKa = ${PKA.toFixed(4)}\nn(A⁻) = ${nB.toExponential(3)} mol\nn(HA) = ${(nA-nB).toExponential(3)} mol\nlog(ratio) = ${Math.log10(nB/(nA-nB)).toFixed(4)}\npH = ${pH.toFixed(4)}`};}
+    const cOH2=(nB-nA)/V;return{label:'After Equiv.',tag:'tag-after',title:'Excess Strong Base',formula:'pH = 14 + log([OH⁻]excess)',calc:`[OH⁻]ex = ${cOH2.toExponential(3)} mol/L\npH = ${pH.toFixed(4)}`};
+  }
+  if(t==='strongAcidWeakBase'){
+    if(vol<=0) return {label:'Initial',tag:'tag-init',title:'Pure Strong Acid',formula:'pH = −log(Cacid)',calc:`[H⁺] = ${ST.cA.toFixed(4)}\npH = ${pH.toFixed(4)}`};
+    if(Math.abs(vol-eqV)<=tol) return {label:'Equivalence',tag:'tag-eq',title:'NH₄⁺ Hydrolysis (pH < 7)',formula:'[H⁺] = √(Ka(NH₄⁺) × c(NH₄⁺))\nKa(NH₄⁺) = Kw/Kb',calc:`c(NH₄⁺) = ${(nA/V).toFixed(4)} mol/L\nKa = ${KA_NH4.toExponential(3)}\n[H⁺] = ${Math.sqrt(KA_NH4*(nA/V)).toExponential(3)}\npH = ${pH.toFixed(4)}`};
+    if(nB<nA){const cH2=(nA-nB)/V;return{label:'Before Equiv.',tag:'tag-buf',title:'Excess Strong Acid',formula:'pH = −log([H⁺]excess)',calc:`n(H⁺)ex = ${(nA-nB).toExponential(3)}\n[H⁺] = ${cH2.toExponential(3)}\npH = ${pH.toFixed(4)}`};}
+    const cN=(nB-nA)/V,cNH4=nA/V;return{label:'Buffer NH₄⁺/NH₃',tag:'tag-buf',title:'Post-Equiv. Buffer Region',formula:'pH = pKa(NH₄⁺) + log([NH₃]/[NH₄⁺])\npKa(NH₄⁺) = 9.255',calc:`n(NH₃)ex = ${(nB-nA).toExponential(3)}\nn(NH₄⁺) = ${nA.toExponential(3)}\nlog ratio = ${Math.log10((nB-nA)/nA).toFixed(4)}\npH = ${pH.toFixed(4)}`};
+  }
+  return {label:'',tag:'tag-init',title:'',formula:'',calc:''};
+}
+
+// ═══════════════════════════════════════════════
+// CANVAS ENGINE
+// ═══════════════════════════════════════════════
+const MC=document.getElementById('main-canvas');
+const OC=document.getElementById('ov-canvas');
+const CTX=MC.getContext('2d');
+const OCTX=OC.getContext('2d');
+const CW=640,CH=440;
+const PAD={l:60,t:24,r:24,b:50};
+const PW=CW-PAD.l-PAD.r, PH=CH-PAD.t-PAD.b;
+
+function tX(v){return PAD.l+(v-ST.xMin)/(ST.xMax-ST.xMin)*PW;}
+function tY(p){return PAD.t+PH-(p-ST.yMin)/(ST.yMax-ST.yMin)*PH;}
+function fX(cx){return ST.xMin+(cx-PAD.l)/PW*(ST.xMax-ST.xMin);}
+function fY(cy){return ST.yMin+(1-(cy-PAD.t)/PH)*(ST.yMax-ST.yMin);}
+function isDark(){return document.documentElement.getAttribute('data-theme')==='dark';}
+function gc(l,d){return isDark()?d:l;}
+
+function getAxisTicks(mn,mx,n){
+  const range=mx-mn,step=Math.pow(10,Math.floor(Math.log10(range/n)));
+  const nice=[1,2,2.5,5,10].map(f=>f*step);
+  const s=nice.find(f=>(range/f)<=n+1)||nice[nice.length-1];
+  const ticks=[];
+  for(let v=Math.ceil(mn/s)*s;v<=mx+1e-9;v=Math.round((v+s)*1e10)/1e10) ticks.push(v);
+  return ticks;
+}
+
+function drawGraph(){
+  const c=CTX;
+  c.clearRect(0,0,CW,CH);
+  c.fillStyle=gc('#FFFFFF','#0f1923');
+  c.fillRect(0,0,CW,CH);
+  c.fillStyle=gc('#F9FBFD','#111e2e');
+  c.fillRect(PAD.l,PAD.t,PW,PH);
+
+  // grid
+  if(ST.showGrid){
+    c.strokeStyle=gc('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)');
+    c.lineWidth=1;
+    getAxisTicks(ST.xMin,ST.xMax,8).forEach(v=>{
+      if(v<ST.xMin-1e-9||v>ST.xMax+1e-9) return;
+      const x=tX(v);c.beginPath();c.moveTo(x,PAD.t);c.lineTo(x,PAD.t+PH);c.stroke();
+    });
+    getAxisTicks(ST.yMin,ST.yMax,7).forEach(v=>{
+      if(v<ST.yMin-1e-9||v>ST.yMax+1e-9) return;
+      const y=tY(v);c.beginPath();c.moveTo(PAD.l,y);c.lineTo(PAD.l+PW,y);c.stroke();
+    });
+  }
+
+  // buffer shading
+  if(ST.showBufShade&&(ST.titType==='weakAcidStrongBase'||ST.titType==='strongAcidWeakBase')){
+    const pKa=ST.titType==='weakAcidStrongBase'?PKA:PKA_NH4;
+    const pHlo=Math.max(ST.yMin,pKa-1),pHhi=Math.min(ST.yMax,pKa+1);
+    c.fillStyle=gc('rgba(0,180,170,0.05)','rgba(0,180,170,0.08)');
+    c.fillRect(PAD.l,tY(pHhi),PW,tY(pHlo)-tY(pHhi));
+  }
+
+  // equivalence line
+  if(ST.showEqMarker){
+    const eqV=getEqVol();
+    if(eqV>=ST.xMin&&eqV<=ST.xMax){
+      c.save();c.strokeStyle='rgba(214,40,57,0.55)';c.lineWidth=1.4;c.setLineDash([5,4]);
+      c.beginPath();c.moveTo(tX(eqV),PAD.t);c.lineTo(tX(eqV),PAD.t+PH);c.stroke();
+      c.setLineDash([]);
+      c.fillStyle='#D62839';c.font='bold 10px sans-serif';c.textAlign='center';
+      const label='Veq='+eqV.toFixed(1)+'mL';
+      const tx=tX(eqV);
+      c.fillStyle='rgba(214,40,57,0.85)';
+      c.fillRect(tx-30,PAD.t-1,60,15);
+      c.fillStyle='#fff';c.fillText(label,tx,PAD.t+11);
+      c.restore();
+    }
+  }
+
+  // half-equivalence line
+  if(ST.showHalfMarker&&ST.titType!=='strongAcidStrongBase'){
+    const hV=getHalfEqVol();
+    if(hV>=ST.xMin&&hV<=ST.xMax){
+      c.save();c.strokeStyle='rgba(0,119,182,0.45)';c.lineWidth=1.2;c.setLineDash([4,5]);
+      c.beginPath();c.moveTo(tX(hV),PAD.t);c.lineTo(tX(hV),PAD.t+PH);c.stroke();
+      c.setLineDash([]);
+      const pKa=ST.titType==='weakAcidStrongBase'?PKA:PKA_NH4;
+      if(pKa>=ST.yMin&&pKa<=ST.yMax){
+        c.strokeStyle='rgba(0,119,182,0.35)';c.lineWidth=1.2;c.setLineDash([4,5]);
+        c.beginPath();c.moveTo(PAD.l,tY(pKa));c.lineTo(PAD.l+PW,tY(pKa));c.stroke();
+        c.setLineDash([]);
+        c.fillStyle='rgba(0,119,182,0.8)';c.font='bold 10px sans-serif';c.textAlign='left';
+        c.fillText('pKa='+pKa.toFixed(2),PAD.l+4,tY(pKa)-4);
+      }
+      c.restore();
+    }
+  }
+
+  // pH=7 line
+  if(7>=ST.yMin&&7<=ST.yMax){
+    c.save();c.strokeStyle=gc('rgba(0,0,0,0.12)','rgba(255,255,255,0.12)');c.lineWidth=1;c.setLineDash([3,4]);
+    c.beginPath();c.moveTo(PAD.l,tY(7));c.lineTo(PAD.l+PW,tY(7));c.stroke();
+    c.setLineDash([]);c.restore();
+  }
+
+  // titration curve
+  const pts=ST.fullPreview?getFullCurvePoints():ST.simData;
+  if(pts.length>=2){
+    c.save();c.strokeStyle=gc('#0077B6','#38BDF8');c.lineWidth=ST.lineWidth;
+    c.lineJoin='round';c.lineCap='round';
+    c.beginPath();
+    let started=false;
+    pts.forEach(pt=>{
+      if(pt.v<ST.xMin-0.01||pt.v>ST.xMax+0.01) return;
+      const x=tX(pt.v),y=tY(pt.pH);
+      if(!started){c.moveTo(x,y);started=true;}else c.lineTo(x,y);
+    });
+    c.stroke();c.restore();
+  }
+
+  // captured data points
+  ST.capturedData.forEach(pt=>{
+    if(pt.v<ST.xMin||pt.v>ST.xMax||pt.pH<ST.yMin||pt.pH>ST.yMax) return;
+    c.beginPath();c.arc(tX(pt.v),tY(pt.pH),5,0,Math.PI*2);
+    c.fillStyle=gc('#E07A2F','#FBA94C');c.fill();
+    c.strokeStyle=gc('#fff','#1a2640');c.lineWidth=1.5;c.stroke();
+  });
+
+  // last sim point
+  if(ST.simData.length>0&&!ST.fullPreview){
+    const lp=ST.simData[ST.simData.length-1];
+    if(lp.v>=ST.xMin&&lp.v<=ST.xMax){
+      c.beginPath();c.arc(tX(lp.v),tY(lp.pH),5,0,Math.PI*2);
+      c.fillStyle=gc('#D62839','#f87171');c.fill();
+      c.strokeStyle=gc('#fff','#1a2640');c.lineWidth=1.8;c.stroke();
+    }
+  }
+
+  // axes
+  c.strokeStyle=gc('#374151','#94a3b8');c.lineWidth=1.5;
+  c.beginPath();c.moveTo(PAD.l,PAD.t);c.lineTo(PAD.l,PAD.t+PH);c.lineTo(PAD.l+PW,PAD.t+PH);c.stroke();
+  c.fillStyle=gc('#374151','#94a3b8');
+  c.font='bold 11px sans-serif';
+
+  // x ticks
+  getAxisTicks(ST.xMin,ST.xMax,8).forEach(v=>{
+    if(v<ST.xMin-1e-9||v>ST.xMax+1e-9) return;
+    const x=tX(v);
+    c.beginPath();c.moveTo(x,PAD.t+PH);c.lineTo(x,PAD.t+PH+5);c.stroke();
+    c.textAlign='center';c.fillText(v%1===0?v.toFixed(0):v.toFixed(1),x,PAD.t+PH+17);
+  });
+
+  // y ticks
+  getAxisTicks(ST.yMin,ST.yMax,7).forEach(v=>{
+    if(v<ST.yMin-1e-9||v>ST.yMax+1e-9) return;
+    const y=tY(v);
+    c.beginPath();c.moveTo(PAD.l-5,y);c.lineTo(PAD.l,y);c.stroke();
+    c.textAlign='right';c.fillText(v%1===0?v.toFixed(0):v.toFixed(1),PAD.l-8,y+4);
+  });
+
+  // axis labels
+  c.fillStyle=gc('#111827','#e2e8f0');c.font='bold 12px sans-serif';
+  c.textAlign='center';c.fillText('Volume of Base Added (mL)',PAD.l+PW/2,CH-6);
+  c.save();c.translate(13,PAD.t+PH/2);c.rotate(-Math.PI/2);c.fillText('pH',0,0);c.restore();
+}
+
+function getFullCurvePoints(){
+  const pts=[];
+  const maxV=getEqVol()*2.2;
+  const eqV=getEqVol();
+  for(let v=0;v<=maxV;v+=0.1){
+    const pH=calcPH(ST.vA,v);
+    pts.push({v,pH});
+  }
+  return pts;
+}
+
+function drawOverlay(mx,my){
+  OCTX.clearRect(0,0,CW,CH);
+  if(mx===null) return;
+  const vol=fX(mx), pH=fY(my);
+  if(mx<PAD.l||mx>PAD.l+PW||my<PAD.t||my>PAD.t+PH) return;
+
+  // find nearest curve point
+  const pts=ST.simData;
+  if(pts.length<2) return;
+  let nearest=null, minDx=99;
+  pts.forEach(pt=>{
+    const dx=Math.abs(pt.v-vol);
+    if(dx<minDx){minDx=dx;nearest=pt;}
+  });
+  if(!nearest||minDx>2) return;
+
+  const cx=tX(nearest.v),cy=tY(nearest.pH);
+  // crosshair
+  OCTX.save();OCTX.strokeStyle=gc('rgba(0,0,0,0.3)','rgba(255,255,255,0.3)');OCTX.lineWidth=1;OCTX.setLineDash([4,4]);
+  OCTX.beginPath();OCTX.moveTo(cx,PAD.t);OCTX.lineTo(cx,PAD.t+PH);OCTX.stroke();
+  OCTX.beginPath();OCTX.moveTo(PAD.l,cy);OCTX.lineTo(PAD.l+PW,cy);OCTX.stroke();
+  OCTX.setLineDash([]);
+
+  // dot
+  OCTX.beginPath();OCTX.arc(cx,cy,6,0,Math.PI*2);
+  OCTX.fillStyle=gc('#0077B6','#38BDF8');OCTX.fill();
+  OCTX.strokeStyle='#fff';OCTX.lineWidth=2;OCTX.stroke();
+
+  // tooltip
+  const label=`V = ${nearest.v.toFixed(2)} mL   pH = ${nearest.pH.toFixed(3)}`;
+  OCTX.font='bold 12px monospace';
+  const tw=OCTX.measureText(label).width+16;
+  let tx=cx+12,ty=cy-14;
+  if(tx+tw>CW-4) tx=cx-tw-12;
+  if(ty<PAD.t+4) ty=cy+20;
+  OCTX.fillStyle=gc('rgba(27,58,107,0.9)','rgba(30,50,80,0.95)');
+  const rh=22;
+  OCTX.beginPath();OCTX.roundRect(tx,ty-rh+4,tw,rh,4);OCTX.fill();
+  OCTX.fillStyle='#fff';OCTX.textBaseline='middle';OCTX.fillText(label,tx+8,ty-rh/2+4);
+  OCTX.restore();
+
+  document.getElementById('hover-readout').textContent=`V=${nearest.v.toFixed(2)}mL  pH=${nearest.pH.toFixed(3)}`;
+}
+
+// ═══════════════════════════════════════════════
+// FLASK VISUAL
+// ═══════════════════════════════════════════════
+function updateFlask(){
+  const eqV=getEqVol();
+  const frac=Math.min(ST.vB/Math.max(eqV*2,10),1);
+  // burette liquid drops
+  const bLiq=document.getElementById('b-liquid');
+  bLiq.style.height=(80-frac*75)+'%';
+  // flask solution color
+  const col=getSolColor(ST.pH);
+  const g0=document.getElementById('sol-g0');
+  const g1=document.getElementById('sol-g1');
+  const rgb=col.match(/\d+/g);
+  if(rgb){
+    const r=parseInt(rgb[0]),g=parseInt(rgb[1]),b=parseInt(rgb[2]);
+    g0.setAttribute('stop-color',`rgba(${r},${g},${b},0.6)`);
+    g1.setAttribute('stop-color',`rgba(${r},${g},${b},0.88)`);
+  }
+  // pH display
+  const phEl=document.getElementById('ph-display');
+  phEl.textContent=ST.pH.toFixed(2);
+  phEl.style.color=col;
+  // stats
+  document.getElementById('base-added').textContent=ST.vB.toFixed(2);
+  document.getElementById('total-vol').textContent=(ST.vA+ST.vB).toFixed(1);
+  document.getElementById('eq-vol').textContent=eqV.toFixed(2);
+  document.getElementById('half-eq-vol').textContent=(eqV/2).toFixed(2);
+  // equivalence banner
+  const banner=document.getElementById('eq-banner');
+  if(ST.vB>=eqV-0.05){
+    banner.style.display='flex';
+    document.getElementById('eq-msg').textContent=`Equivalence point at ${eqV.toFixed(2)} mL! pH = ${calcPH(ST.vA,eqV).toFixed(2)}`;
+  } else banner.style.display='none';
+  // drop
+  const drop=document.getElementById('drop');
+  drop.style.display=(ST.running&&ST.showDrops)?'block':'none';
+  // ripple on drop
+  if(ST.running){
+    const ripple=document.getElementById('ripple');
+    ripple.setAttribute('rx',String(8+Math.random()*5));
+    ripple.setAttribute('ry',String(2+Math.random()*2));
+    ripple.setAttribute('opacity','0.4');
+    setTimeout(()=>ripple.setAttribute('opacity','0'),300);
+  }
+}
+
+function updateSolDesc(){
+  const descs={
+    strongAcidStrongBase:'HCl (strong acid) + NaOH (strong base)',
+    weakAcidStrongBase:'CH₃COOH (weak acid) + NaOH (strong base)',
+    strongAcidWeakBase:'HCl (strong acid) + NH₃ (weak base)'
+  };
+  document.getElementById('sol-desc').textContent=descs[ST.titType];
+}
+
+// ═══════════════════════════════════════════════
+// SIMULATION LOOP
+// ═══════════════════════════════════════════════
+function step(){
+  if(!ST.running) return;
+  const maxV=Math.min(getEqVol()*2.5,ST.xMax);
+  const inc=ST.speed*0.05;
+  ST.vB=Math.min(ST.vB+inc,maxV);
+  ST.pH=calcPH(ST.vA,ST.vB);
+  ST.simData.push({v:ST.vB,pH:ST.pH});
+  updateFlask();
+  drawGraph();
+  if(ST.vB>=maxV){ stopSim(); return; }
+  ST.animId=requestAnimationFrame(step);
+}
+
+function startSim(){
+  ST.running=true;ST.fullPreview=false;
+  document.getElementById('btn-start').disabled=true;
+  document.getElementById('btn-stop').disabled=false;
+  setAddBtns(true);
+  ST.animId=requestAnimationFrame(step);
+}
+
+function stopSim(){
+  ST.running=false;
+  document.getElementById('btn-start').disabled=false;
+  document.getElementById('btn-stop').disabled=true;
+  document.getElementById('drop').style.display='none';
+  setAddBtns(false);
+  if(ST.animId) cancelAnimationFrame(ST.animId);
+}
+
+function resetSim(){
+  stopSim();
+  ST.vB=0;ST.fullPreview=false;
+  ST.pH=calcPH(ST.vA,0);
+  ST.simData=[{v:0,pH:ST.pH}];
+  document.getElementById('eq-banner').style.display='none';
+  updateFlask();updateSolDesc();drawGraph();
+}
+
+function addBase(amount){
+  if(ST.running) return;
+  ST.fullPreview=false;
+  const maxV=Math.min(getEqVol()*2.5,ST.xMax);
+  ST.vB=Math.min(ST.vB+amount,maxV);
+  ST.pH=calcPH(ST.vA,ST.vB);
+  ST.simData.push({v:ST.vB,pH:ST.pH});
+  updateFlask();drawGraph();
+}
+
+function setAddBtns(dis){
+  ['add-01','add-05','add-1','add-2','add-5'].forEach(id=>document.getElementById(id).disabled=dis);
+}
+
+// ═══════════════════════════════════════════════
+// CAPTURE & DATA
+// ═══════════════════════════════════════════════
+function capturePoint(){
+  const reg=getRegion(ST.vB);
+  const typeLabels={strongAcidStrongBase:'Strong Acid + Strong Base',weakAcidStrongBase:'Weak Acid + Strong Base',strongAcidWeakBase:'Strong Acid + Weak Base'};
+  const pt={
+    v:ST.vB,pH:ST.pH,
+    H:Math.pow(10,-ST.pH),
+    region:reg.label,
+    type:typeLabels[ST.titType],
+    time:new Date().toLocaleTimeString()
+  };
+  ST.capturedData.push(pt);
+  renderDataTable();drawGraph();
+  showToast(`Captured: V=${pt.v.toFixed(2)}mL, pH=${pt.pH.toFixed(3)}`);
+}
+
+function renderDataTable(){
+  const tbody=document.getElementById('data-tbody');
+  const count=document.getElementById('data-count');
+  count.textContent=ST.capturedData.length;
+  if(ST.capturedData.length===0){
+    tbody.innerHTML='<tr><td colspan="7" class="data-empty"><i class="fa fa-database" style="font-size:22px;display:block;margin-bottom:7px;opacity:.3"></i>No data yet.</td></tr>';
+    document.getElementById('data-summary').innerHTML='';return;
+  }
+  tbody.innerHTML=ST.capturedData.map((pt,i)=>`
+    <tr>
+      <td class="mn">${i+1}</td>
+      <td class="mn">${pt.v.toFixed(3)}</td>
+      <td class="mn">${pt.pH.toFixed(4)}</td>
+      <td class="mn">${pt.H.toExponential(4)}</td>
+      <td><span class="badge ${pt.region.includes('Buffer')||pt.region.includes('Before')?'tag-buf':pt.region.includes('Equiv.')&&!pt.region.includes('½')&&!pt.region.includes('After')?'tag-eq':pt.region.includes('½')?'tag-half':pt.region.includes('After')?'tag-after':'tag-init'}">${pt.region}</span></td>
+      <td style="font-size:11px">${pt.type}</td>
+      <td style="font-size:11px;color:var(--tx3)">${pt.time}</td>
+    </tr>`).join('');
+  // summary stats
+  const pHs=ST.capturedData.map(p=>p.pH);
+  const mn=Math.min(...pHs).toFixed(3),mx2=Math.max(...pHs).toFixed(3);
+  const eqV=getEqVol();
+  document.getElementById('data-summary').innerHTML=`
+    <div class="ds-item">Points: <span>${ST.capturedData.length}</span></div>
+    <div class="ds-item">pH min: <span>${mn}</span></div>
+    <div class="ds-item">pH max: <span>${mx2}</span></div>
+    <div class="ds-item">Equiv. Vol: <span>${eqV.toFixed(2)} mL</span></div>`;
+}
+
+function exportCSV(){
+  if(!ST.capturedData.length){showToast('No data to export');return;}
+  const hdr='#,Volume (mL),pH,[H+] (mol/L),Region,Titration Type,Timestamp\n';
+  const rows=ST.capturedData.map((pt,i)=>`${i+1},${pt.v.toFixed(3)},${pt.pH.toFixed(4)},${pt.H.toExponential(4)},"${pt.region}","${pt.type}","${pt.time}"`).join('\n');
+  const blob=new Blob([hdr+rows],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='titration_data_'+Date.now()+'.csv';a.click();
+  showToast('CSV exported!');
+}
+
+// ═══════════════════════════════════════════════
+// pH CALCULATOR — STEP-BY-STEP
+// ═══════════════════════════════════════════════
+function doCalc(){
+  const type=document.getElementById('c-type').value;
+  const cA=parseFloat(document.getElementById('c-ca').value);
+  const vA=parseFloat(document.getElementById('c-va').value);
+  const cB=parseFloat(document.getElementById('c-cb').value);
+  const vB=parseFloat(document.getElementById('c-vb').value);
+  if(isNaN(cA)||isNaN(cB)||isNaN(vA)||isNaN(vB)||cA<=0||cB<=0||vA<=0||vB<0){
+    document.getElementById('calc-result').innerHTML='<div class="calc-empty" style="color:var(--danger)"><i class="fa fa-exclamation-triangle"></i> Please enter valid positive values.</div>';return;
+  }
+  const nA=(vA/1000)*cA, nB=(vB/1000)*cB, V=(vA+vB)/1000;
+  const pH=calcPH(vA,vB,type,cA,cB);
+  const col=getSolColor(pH);
+  const steps=buildSteps(type,cA,vA,cB,vB,nA,nB,V,pH);
+  const regionLabel=getRegionLabelForCalc(type,nA,nB,vB);
+  document.getElementById('calc-result').innerHTML=`
+    <div class="calc-ph-big" style="color:${col}">${pH.toFixed(4)}</div>
+    <div style="text-align:center;margin-bottom:12px"><span class="badge region-tag ${regionLabel.tag}">${regionLabel.label}</span></div>
+    <ul class="step-list">${steps.map((s,i)=>`<li class="step-li"><div class="step-hd"><span class="step-num">${i+1}</span><span class="step-txt">${s.desc}</span></div>${s.eq?`<div class="eq-block">${s.eq}</div>`:''}</li>`).join('')}</ul>`;
+}
+
+function getRegionLabelForCalc(type,nA,nB,vB){
+  const eqV=(nA>0)?(nA/(nB/(vB/1000||1)))*1000:0;
+  if(vB<=0) return {label:'Initial',tag:'tag-init'};
+  if(nB<nA*0.995) return type==='weakAcidStrongBase'?{label:'Buffer Region',tag:'tag-buf'}:{label:'Before Equivalence',tag:'tag-buf'};
+  if(Math.abs(nB-nA)<nA*0.02) return {label:'Equivalence Point',tag:'tag-eq'};
+  return {label:'After Equivalence',tag:'tag-after'};
+}
+
+function buildSteps(type,cA,vA,cB,vB,nA,nB,V,pH){
+  const steps=[];
+  const fmt=v=>v.toExponential(4);
+  const fmtf=v=>v.toFixed(4);
+
+  steps.push({desc:'Calculate moles of acid and base',eq:`n(acid) = (${vA} mL / 1000) × ${cA} mol/L = ${fmt(nA)} mol\nn(base) = (${vB} mL / 1000) × ${cB} mol/L = ${fmt(nB)} mol\nV_total = ${(vA+vB).toFixed(1)} mL = ${V.toFixed(5)} L`});
+
+  if(type==='strongAcidStrongBase'){
+    if(nA>nB){
+      const ex=nA-nB,cH=ex/V;
+      steps.push({desc:'HCl in excess: n(H⁺)excess = n(HCl) − n(NaOH)',eq:`n(H⁺)excess = ${fmt(nA)} − ${fmt(nB)} = ${fmt(ex)} mol`});
+      steps.push({desc:'Calculate [H⁺] from excess moles',eq:`[H⁺] = ${fmt(ex)} / ${V.toFixed(5)} = ${fmt(cH)} mol/L`});
+      steps.push({desc:'Calculate pH',eq:`pH = −log(${fmt(cH)}) = ${fmtf(pH)}`});
+    } else if(nB>nA){
+      const ex=nB-nA,cOH=ex/V;
+      steps.push({desc:'NaOH in excess: n(OH⁻)excess = n(NaOH) − n(HCl)',eq:`n(OH⁻)excess = ${fmt(nB)} − ${fmt(nA)} = ${fmt(ex)} mol`});
+      steps.push({desc:'Calculate [OH⁻]',eq:`[OH⁻] = ${fmt(ex)} / ${V.toFixed(5)} = ${fmt(cOH)} mol/L`});
+      steps.push({desc:'Calculate pOH then pH',eq:`pOH = −log(${fmt(cOH)}) = ${fmtf(-Math.log10(cOH))}\npH = 14 − pOH = ${fmtf(pH)}`});
+    } else {
+      steps.push({desc:'Moles of acid exactly equal moles of base — equivalence point'});
+      steps.push({desc:'NaCl is a neutral salt; no hydrolysis occurs',eq:`pH = 7.0000 (at 25°C)`});
+    }
+  } else if(type==='weakAcidStrongBase'){
+    if(vB<=0){
+      const cAcid=nA/V;
+      steps.push({desc:'Pure weak acid solution. Set up ICE table for CH₃COOH ⇌ H⁺ + CH₃COO⁻',eq:`Ka = x²/(${fmtf(cAcid)} − x) ≈ x²/${fmtf(cAcid)}\nx = [H⁺] = √(Ka × Ca) = √(1.8×10⁻⁵ × ${fmtf(cAcid)})`});
+      const H=Math.sqrt(KA*cAcid);
+      steps.push({desc:'Solve for [H⁺]',eq:`[H⁺] = √(${(KA*cAcid).toExponential(4)}) = ${fmt(H)} mol/L`});
+      steps.push({desc:'Calculate pH',eq:`pH = −log(${fmt(H)}) = ${fmtf(pH)}`});
+    } else if(nB<nA){
+      const cHA=(nA-nB)/V,cA_=nB/V;
+      steps.push({desc:'Buffer region: CH₃COOH partially neutralised by NaOH',eq:`n(CH₃COOH)remaining = ${fmt(nA-nB)} mol\nn(CH₃COO⁻)formed   = ${fmt(nB)} mol`});
+      steps.push({desc:'Apply Henderson-Hasselbalch equation',eq:`pH = pKa + log([A⁻]/[HA])\n   = ${fmtf(PKA)} + log(${fmt(nB)}/${fmt(nA-nB)})\n   = ${fmtf(PKA)} + (${fmtf(Math.log10(nB/(nA-nB)))})\n   = ${fmtf(pH)}`});
+    } else if(nB>nA){
+      const ex=nB-nA,cOH=ex/V;
+      steps.push({desc:'NaOH in excess — dominates over acetate hydrolysis',eq:`[OH⁻] = ${fmt(ex)}/${V.toFixed(5)} = ${fmt(cOH)} mol/L\npOH = ${fmtf(-Math.log10(cOH))}\npH  = ${fmtf(pH)}`});
+    } else {
+      const cAeq=nA/V,Kbeq=KB_AC,OH=Math.sqrt(Kbeq*cAeq);
+      steps.push({desc:'Equivalence point: all CH₃COOH → CH₃COO⁻. Hydrolysis of acetate ion.',eq:`CH₃COO⁻ + H₂O ⇌ CH₃COOH + OH⁻\nKb(CH₃COO⁻) = Kw/Ka = ${KW.toExponential(1)}/${KA.toExponential(1)} = ${fmt(Kbeq)}`});
+      steps.push({desc:'Calculate [OH⁻]',eq:`[CH₃COO⁻] = ${fmt(cAeq)} mol/L\n[OH⁻] = √(${fmt(Kbeq)} × ${fmt(cAeq)}) = ${fmt(OH)} mol/L`});
+      steps.push({desc:'Calculate pH',eq:`pOH = −log(${fmt(OH)}) = ${fmtf(-Math.log10(OH))}\npH  = 14 − pOH = ${fmtf(pH)}`});
+    }
+  } else { // strongAcidWeakBase
+    if(vB<=0){
+      const cH=nA/V;
+      steps.push({desc:'Pure strong acid (HCl) solution; complete dissociation',eq:`[H⁺] = ${fmt(cH)} mol/L\npH = ${fmtf(pH)}`});
+    } else if(nB<nA){
+      const ex=nA-nB,cH=ex/V;
+      steps.push({desc:'HCl in excess over NH₃: H⁺ + NH₃ → NH₄⁺',eq:`n(H⁺)excess = ${fmt(ex)} mol\n[H⁺] = ${fmt(cH)} mol/L\npH = ${fmtf(pH)}`});
+    } else if(nB>nA){
+      const cN=(nB-nA)/V,cNH4=nA/V;
+      steps.push({desc:'After equiv. point: NH₄⁺/NH₃ buffer. Apply Henderson-Hasselbalch.',eq:`n(NH₃)excess = ${fmt(nB-nA)} mol\nn(NH₄⁺)      = ${fmt(nA)} mol`});
+      steps.push({desc:'Henderson-Hasselbalch with pKa(NH₄⁺) = 9.255',eq:`pH = pKa(NH₄⁺) + log([NH₃]/[NH₄⁺])\n   = ${fmtf(PKA_NH4)} + log(${fmt(nB-nA)}/${fmt(nA)})\n   = ${fmtf(PKA_NH4)} + (${fmtf(Math.log10((nB-nA)/nA))})\n   = ${fmtf(pH)}`});
+    } else {
+      const cNH4=nA/V,H=Math.sqrt(KA_NH4*cNH4);
+      steps.push({desc:'Equivalence: all HCl → NH₄Cl. Hydrolysis of NH₄⁺.',eq:`NH₄⁺ + H₂O ⇌ NH₃ + H₃O⁺\nKa(NH₄⁺) = Kw/Kb = ${fmt(KA_NH4)}`});
+      steps.push({desc:'Calculate [H⁺]',eq:`[NH₄⁺] = ${fmt(cNH4)} mol/L\n[H⁺] = √(${fmt(KA_NH4)} × ${fmt(cNH4)}) = ${fmt(H)} mol/L`});
+      steps.push({desc:'Calculate pH',eq:`pH = −log(${fmt(H)}) = ${fmtf(pH)}`});
+    }
+  }
+  return steps;
+}
+
+// ═══════════════════════════════════════════════
+// AUTOSCALE
+// ═══════════════════════════════════════════════
+function autoScale(){
+  const pts=ST.simData;
+  if(pts.length<3){showToast('Not enough data to autoscale');return;}
+  const vs=pts.map(p=>p.v), phs=pts.map(p=>p.pH);
+  const vMin=Math.max(0,Math.min(...vs)-1), vMax=Math.min(Math.max(...vs)+3,ST.xMax);
+  const pMin=Math.max(0,Math.floor(Math.min(...phs))-0.5);
+  const pMax=Math.min(14,Math.ceil(Math.max(...phs))+0.5);
+  ST.xMin=parseFloat(vMin.toFixed(1));ST.xMax=parseFloat(vMax.toFixed(1));
+  ST.yMin=parseFloat(pMin.toFixed(1));ST.yMax=parseFloat(pMax.toFixed(1));
+  syncAxisInputs();drawGraph();showToast('Autoscaled to data range');
+}
+
+function syncAxisInputs(){
+  document.getElementById('s-xmin').value=ST.xMin;
+  document.getElementById('s-xmax').value=ST.xMax;
+  document.getElementById('s-ymin').value=ST.yMin;
+  document.getElementById('s-ymax').value=ST.yMax;
+}
+
+// ═══════════════════════════════════════════════
+// GRAPH IMAGE EXPORT
+// ═══════════════════════════════════════════════
+function saveGraph(){
+  const tmpCanvas=document.createElement('canvas');
+  tmpCanvas.width=CW;tmpCanvas.height=CH;
+  const tmpCtx=tmpCanvas.getContext('2d');
+  tmpCtx.drawImage(MC,0,0);
+  tmpCtx.drawImage(OC,0,0);
+  const a=document.createElement('a');
+  a.download='titration_curve_'+Date.now()+'.png';
+  a.href=tmpCanvas.toDataURL('image/png');a.click();
+  showToast('Graph saved as PNG!');
+}
+
+// ═══════════════════════════════════════════════
+// REGION EXPLAINER
+// ═══════════════════════════════════════════════
+function showRegionExp(vol){
+  const reg=getRegion(vol);
+  const el=document.getElementById('region-exp');
+  el.innerHTML=`<div class="reg-title"><span class="badge ${reg.tag}">${reg.label}</span>${reg.title}</div>
+    <div class="reg-formula">${reg.formula}</div>
+    <div class="reg-calc">${reg.calc}</div>`;
+}
+
+// ═══════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+// ═══════════════════════════════════════════════
+// CANVAS EVENTS
+// ═══════════════════════════════════════════════
+function canvasXY(e){
+  const r=MC.getBoundingClientRect();
+  const sx=CW/r.width,sy=CH/r.height;
+  const clientX=e.touches?e.touches[0].clientX:e.clientX;
+  const clientY=e.touches?e.touches[0].clientY:e.clientY;
+  return [(clientX-r.left)*sx,(clientY-r.top)*sy];
+}
+
+// ── Mouse events go on MC (main canvas) — OC has pointer-events:none ──
+MC.addEventListener('mousemove',e=>{
+  const [mx,my]=canvasXY(e);
+  drawOverlay(mx,my);
+  if(ST.simData.length>1){
+    const vol=fX(mx);
+    const nearVol=ST.simData.reduce((a,b)=>Math.abs(b.v-vol)<Math.abs(a.v-vol)?b:a).v;
+    showRegionExp(nearVol);
+  }
+});
+
+MC.addEventListener('mouseleave',()=>{
+  OCTX.clearRect(0,0,CW,CH);
+  document.getElementById('hover-readout').textContent='—';
+  document.getElementById('region-exp').innerHTML='<div style="color:var(--tx3);font-size:12px;font-style:italic">↑ Hover the titration curve to see region-specific calculations</div>';
+});
+
+MC.addEventListener('click',e=>{
+  const [mx,my]=canvasXY(e);
+  if(mx<PAD.l||mx>PAD.l+PW||my<PAD.t||my>PAD.t+PH) return;
+  if(ST.simData.length<2){showToast('Run simulation first');return;}
+  const vol=fX(mx);
+  const nearest=ST.simData.reduce((a,b)=>Math.abs(b.v-vol)<Math.abs(a.v-vol)?b:a);
+  const reg=getRegion(nearest.v);
+  const typeLabels={strongAcidStrongBase:'Strong Acid + Strong Base',weakAcidStrongBase:'Weak Acid + Strong Base',strongAcidWeakBase:'Strong Acid + Weak Base'};
+  ST.capturedData.push({v:nearest.v,pH:nearest.pH,H:Math.pow(10,-nearest.pH),region:reg.label,type:typeLabels[ST.titType],time:new Date().toLocaleTimeString()});
+  renderDataTable();drawGraph();
+  showToast(`Captured: V=${nearest.v.toFixed(2)}mL, pH=${nearest.pH.toFixed(3)}`);
+});
+
+// ═══════════════════════════════════════════════
+// DARK MODE
+// ═══════════════════════════════════════════════
+function setTheme(dark){
+  ST.dark=dark;
+  document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+  document.getElementById('theme-icon').className=dark?'fa fa-sun':'fa fa-moon';
+  document.getElementById('s-dark').checked=dark;
+  drawGraph();
+}
+
+// ═══════════════════════════════════════════════
+// COLLAPSE CARDS
+// ═══════════════════════════════════════════════
+function toggleCard(hd){
+  const body=hd.nextElementSibling;
+  const icon=hd.querySelector('.ti');
+  body.classList.toggle('open');
+  icon.style.transform=body.classList.contains('open')?'rotate(180deg)':'rotate(0)';
+}
+
+// ═══════════════════════════════════════════════
+// INIT & EVENT WIRING
+// ═══════════════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+document.querySelectorAll('.sc-tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.sc-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.sc-section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.sc).classList.add('active');
+  });
+});
+
+// Simulator controls
+document.getElementById('tit-type').addEventListener('change',e=>{ ST.titType=e.target.value; resetSim(); });
+document.getElementById('acid-conc').addEventListener('change',e=>{ ST.cA=parseFloat(e.target.value)||0.1; resetSim(); });
+document.getElementById('base-conc').addEventListener('change',e=>{ ST.cB=parseFloat(e.target.value)||0.1; resetSim(); });
+document.getElementById('acid-vol').addEventListener('change',e=>{ ST.vA=parseFloat(e.target.value)||25; resetSim(); });
+document.getElementById('speed-range').addEventListener('input',e=>{ ST.speed=parseInt(e.target.value); document.getElementById('speed-val').textContent=ST.speed; });
+document.getElementById('btn-start').addEventListener('click',startSim);
+document.getElementById('btn-stop').addEventListener('click',stopSim);
+document.getElementById('btn-reset').addEventListener('click',resetSim);
+document.getElementById('add-01').addEventListener('click',()=>addBase(0.1));
+document.getElementById('add-05').addEventListener('click',()=>addBase(0.5));
+document.getElementById('add-1').addEventListener('click',()=>addBase(1.0));
+document.getElementById('add-2').addEventListener('click',()=>addBase(2.0));
+document.getElementById('add-5').addEventListener('click',()=>addBase(5.0));
+const capFn=()=>capturePoint();
+document.getElementById('btn-capture').addEventListener('click',capFn);
+document.getElementById('btn-capture2').addEventListener('click',capFn);
+document.getElementById('btn-capture3').addEventListener('click',capFn);
+document.getElementById('btn-autoscale').addEventListener('click',autoScale);
+document.getElementById('btn-export-graph').addEventListener('click',saveGraph);
+document.getElementById('btn-export').addEventListener('click',exportCSV);
+document.getElementById('btn-clear-data').addEventListener('click',()=>{ ST.capturedData=[]; renderDataTable(); drawGraph(); showToast('Data cleared'); });
+document.getElementById('btn-fullcurve').addEventListener('click',()=>{
+  ST.fullPreview=!ST.fullPreview;
+  document.getElementById('btn-fullcurve').innerHTML=ST.fullPreview?'<i class="fa fa-eye-slash"></i> Hide Preview':'<i class="fa fa-wave-square"></i> Preview Full Curve';
+  if(ST.fullPreview){
+    const fpts=getFullCurvePoints();
+    fpts.forEach(pt=>{ if(!ST.simData.find(s=>Math.abs(s.v-pt.v)<0.05)) ST.simData.push(pt); });
+    ST.simData.sort((a,b)=>a.v-b.v);
+  }
+  drawGraph();
+});
+
+// Theme toggle
+document.getElementById('theme-btn').addEventListener('click',()=>setTheme(!ST.dark));
+document.getElementById('s-dark').addEventListener('change',e=>setTheme(e.target.checked));
+
+// Calculator
+document.getElementById('btn-calc').addEventListener('click',doCalc);
+
+// Settings
+document.getElementById('s-apply-axes').addEventListener('click',()=>{
+  ST.xMin=parseFloat(document.getElementById('s-xmin').value)||0;
+  ST.xMax=parseFloat(document.getElementById('s-xmax').value)||50;
+  ST.yMin=parseFloat(document.getElementById('s-ymin').value)||0;
+  ST.yMax=parseFloat(document.getElementById('s-ymax').value)||14;
+  drawGraph();showToast('Axes updated');
+});
+document.getElementById('s-autoscale').addEventListener('change',e=>{ ST.autoScale=e.target.checked; if(ST.autoScale) autoScale(); });
+document.getElementById('s-grid').addEventListener('change',e=>{ ST.showGrid=e.target.checked; drawGraph(); });
+document.getElementById('s-eq-marker').addEventListener('change',e=>{ ST.showEqMarker=e.target.checked; drawGraph(); });
+document.getElementById('s-halfq-marker').addEventListener('change',e=>{ ST.showHalfMarker=e.target.checked; drawGraph(); });
+document.getElementById('s-buf-shade').addEventListener('change',e=>{ ST.showBufShade=e.target.checked; drawGraph(); });
+document.getElementById('s-linewidth').addEventListener('change',e=>{ ST.lineWidth=parseFloat(e.target.value)||2.5; drawGraph(); });
+document.getElementById('s-drops').addEventListener('change',e=>{ ST.showDrops=e.target.checked; });
+document.getElementById('s-fontsize').addEventListener('change',e=>{ document.body.style.fontSize=e.target.value+'px'; });
+
+// Redraw on window resize
+window.addEventListener('resize',()=>drawGraph());
+
+// System dark mode detection
+if(window.matchMedia('(prefers-color-scheme: dark)').matches) setTheme(true);
+
+// ─── BOOT ───
+resetSim();
+</script>
+</body>
+</html>
